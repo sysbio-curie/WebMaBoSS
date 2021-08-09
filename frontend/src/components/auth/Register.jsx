@@ -137,7 +137,7 @@ class Register extends React.Component {
 						</div>
 						<div className="form-group">
 							<div className="form-group">
-								<label htmlFor="email">E-mail</label>
+								<label htmlFor="email">E-mail (optional)</label>
 								<input
 									id="email"
 									className={"form-control" + (this.state.emailHasError?" is-invalid":"")}
@@ -145,7 +145,6 @@ class Register extends React.Component {
 									name="email"
 									onChange={(e) => this.handleEmailChange(e)}
 									value={this.state.email}
-									required
 								/>
 							</div>
 						</div>
