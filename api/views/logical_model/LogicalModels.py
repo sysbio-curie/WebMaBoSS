@@ -59,7 +59,16 @@ def ginsim_to_maboss(path):
 	
 def bnet_to_maboss(path):
 	print("Converting bnet %s to maboss" % path)
-	maboss_model = maboss.loadBNetCMaBoSS(path)
+	lines = []
+	with open(path, 'r') as b_file:
+		lines = b_file.readlines()
+
+	lines = [line for line in lines if line.strip() != "targets, factors"] 
+	#print(lines)
+	with open(path, 'w') as b_file:
+		b_file.writelines(lines)
+
+	maboss_model = maboss.loadBNet(path, cmaboss=True)
 	
 	bnd_file = tempfile.mkstemp(suffix=".bnd")
 	cfg_file = tempfile.mkstemp(suffix=".cfg")

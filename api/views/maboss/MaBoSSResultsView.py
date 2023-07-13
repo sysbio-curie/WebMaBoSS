@@ -196,11 +196,12 @@ class MaBoSSResultsFixedPoints(HasMaBoSSSimulation):
 			# print(fixed_points)
 			nodes = list(fixed_points.keys())[3:]
 			new_fps = []
-			for i in range(len(fixed_points['FP'])):
-				new_fps.append({
-					"proba": fixed_points['Proba'][str(i)],
-					"nodes": {node:fixed_points[node][str(i)] for node in nodes}
-				})
+			if 'FP' in fixed_points.keys():
+				for i in range(len(fixed_points['FP'])):
+					new_fps.append({
+						"proba": fixed_points['Proba'][str(i)],
+						"nodes": {node:fixed_points[node][str(i)] for node in nodes}
+					})
 			fixed_points = new_fps
 			
 		return Response(

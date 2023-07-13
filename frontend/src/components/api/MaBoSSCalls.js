@@ -494,8 +494,8 @@ class MaBoSSCalls {
 					body: formData,
 					headers: getDefaultHeaders()
 				}
-			).then(response => checkAuthorization(response)
-			).then(response => response.json())
+			).then(response => checkAuthorization(response))
+			// ).then(response => response.json())
 		);
 	}
 
