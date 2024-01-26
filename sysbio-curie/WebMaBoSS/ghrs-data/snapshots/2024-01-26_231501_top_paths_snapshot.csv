@@ -1,0 +1,11 @@
+url_path,views_total,views_unique
+/sysbio-curie/WebMaBoSS/tree/master/api/models,5,1
+/sysbio-curie/WebMaBoSS/blob/master/api/models/logical_model.py,4,1
+/sysbio-curie/WebMaBoSS/blob/master/api/views/HasModel.py,4,1
+/sysbio-curie/WebMaBoSS/blob/master/api/views/logical_model/LogicalModel.py,3,1
+/sysbio-curie/WebMaBoSS/tree/master/api,3,1
+/sysbio-curie/WebMaBoSS/tree/master/api/views/logical_model,3,1
+/sysbio-curie/WebMaBoSS,2,2
+/sysbio-curie/WebMaBoSS/blob/master/api/models/maboss.py,2,1
+/sysbio-curie/WebMaBoSS/blob/master/LICENSE.md,2,1
+/sysbio-curie/WebMaBoSS/tree/master/api/views,2,1
