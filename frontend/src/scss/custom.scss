@@ -151,7 +151,7 @@ img.fullsize {
 
 div.form-inline-sm {
 
-  @extend .form-inline;
+  @extend .form-inline !optional;
 
   label {
     font-size: 0.875rem;
