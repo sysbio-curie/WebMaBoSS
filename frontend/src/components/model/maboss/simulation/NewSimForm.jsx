@@ -239,8 +239,8 @@ class NewSimForm extends React.Component {
 		this.setState(prevState => ({settings: {...prevState.settings, sample_count: value}}));
 	}
 
-	handleDiscreteTimeChange(value) {
-		this.setState(prevState => ({settings: {...prevState.settings, discrete_time: value}}))
+	handleDiscreteTimeChange() {
+		this.setState(prevState => ({settings: {...prevState.settings, discrete_time: !prevState.settings.discrete_time}}))
 	}
 
 	handleMaxTimeChange(e) {
@@ -248,8 +248,8 @@ class NewSimForm extends React.Component {
 		this.setState(prevState => ({settings: {...prevState.settings, max_time: value}}));
 	}
 
-	handlePhysicalRandGen(value) {
-		this.setState(prevState => ({settings: {...prevState.settings, use_physrandgen: value}}));
+	handlePhysicalRandGen() {
+		this.setState(prevState => ({settings: {...prevState.settings, use_physrandgen: !prevState.settings.use_physrandgen}}));
 	}
 
 	handlePseudoRandomSeed(e) {
@@ -472,11 +472,11 @@ class NewSimForm extends React.Component {
 									</div> */}
 									<div className="form-group general">
 										<label htmlFor="discreteTime" className="name">Discrete time</label>
-										<Switch checked={this.state.settings.discrete_time} toggle={this.handleDiscreteTimeChange} id={"discreteTime"}/>
+										<Switch checked={this.state.settings.discrete_time} toggle={() => {this.handleDiscreteTimeChange()}} id={"discreteTime"}/>
 									</div>
 									<div className="form-group general">
 										<label htmlFor="physicalRandGen" className="name">Use physical random generator</label>
-										<Switch checked={this.state.settings.use_physrandgen} toggle={this.handlePhysicalRandGen} id={"physicalRandGen"}/>
+										<Switch checked={this.state.settings.use_physrandgen} toggle={() => {this.handlePhysicalRandGen()}} id={"physicalRandGen"}/>
 									</div>
 									<div className="form-group general">
 										<label htmlFor="pseudoRandomSeed" className="name">Pseudorandom seed</label>
