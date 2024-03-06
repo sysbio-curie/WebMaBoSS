@@ -8,33 +8,30 @@ WORKDIR /var/webmaboss
 ## distribution packages
 ##
 RUN apt-get update -qq && \
-    apt-get install -yq --no-install-recommends ca-certificates wget python3 python3-pip python3-dev\
+    apt-get install -yq --no-install-recommends ca-certificates wget pkg-config \
+                          python3 python3-dev python3-pip \
                           curl software-properties-common nano git apt-transport-https \
                           apache2 apache2-dev mariadb-client libmariadb-dev graphviz unzip \
                           flex bison g++ make cmake libxml2-dev libbz2-dev zlib1g-dev \
-    && apt clean -y \
-    && python3 -m pip install --no-cache-dir --upgrade setuptools pip wheel
-
+    && apt-get clean -y \
 ##-----------------------------------------------------------------------------------------------
 ## base conda environment
 ## 
-RUN CONDA_VERSION="py39_4.12.0" && \
-    wget --quiet https://repo.continuum.io/miniconda/Miniconda3-${CONDA_VERSION}-Linux-x86_64.sh -O ~/miniconda.sh && \
+RUN wget --quiet https://repo.anaconda.com/miniconda/Miniconda3-py312_24.1.2-0-Linux-x86_64.sh -O ~/miniconda.sh && \
     /bin/bash ~/miniconda.sh -b -p /opt/conda && \
     rm ~/miniconda.sh 
-          
+    
 ENV PATH="${PATH}:/opt/conda/bin"
 
 RUN conda config --set auto_update_conda False \
     && conda install --no-update-deps -y \
-        potassco::clingo=5.5.2=py39h3fd9d12_0 \
-        colomoto::ginsim=3.0.0b=12 \
+        -c colomoto -c conda-forge ginsim \
     && conda clean -y --all && rm -rf /opt/conda/pkgs
 
 ## -----------------------------------------------------------------------------------------------
 ## NodeJS & Yarn install
 ##
-RUN curl -sL https://deb.nodesource.com/setup_14.x | bash - \
+RUN curl -sL https://deb.nodesource.com/setup_20.x | bash - \
     && apt-get install -y --no-install-recommends nodejs \
     && apt clean -y \
     && npm install -g yarn
@@ -42,9 +39,9 @@ RUN curl -sL https://deb.nodesource.com/setup_14.x | bash - \
 ## -----------------------------------------------------------------------------------------------
 ## Installing libSBML
 ##
-RUN wget https://sourceforge.net/projects/sbml/files/libsbml/5.19.0/stable/libSBML-5.19.0-core-plus-packages-src.tar.gz \
-    && tar -zxf libSBML-5.19.0-core-plus-packages-src.tar.gz \
-    && cd libSBML-5.19.0-Source \
+RUN wget https://github.com/sbmlteam/libsbml/archive/refs/tags/v5.20.2.tar.gz \
+    && tar -zxf v5.20.2.tar.gz \
+    && cd libsbml-5.20.2 \
     && mkdir build \
     && cd build \
     && cmake -DCMAKE_INSTALL_PREFIX=/usr \
@@ -53,7 +50,7 @@ RUN wget https://sourceforge.net/projects/sbml/files/libsbml/5.19.0/stable/libSB
         -DCMAKE_C_COMPILER=gcc \
         -DCMAKE_CXX_STANDARD_LIBRARIES=-lxml2 \
         -DWITH_SWIG=OFF \
-        -DLIBXML_LIBRARY=/usr/lib \
+        -DLIBXML_LIBRARY=/usr/lib/x86_64-linux-gnu/libxml2.so \
         -DLIBXML_INCLUDE_DIR=/usr/include/libxml2 \
         -DENABLE_COMP=ON \
         -DENABLE_FBC=ON \
@@ -67,32 +64,31 @@ RUN wget https://sourceforge.net/projects/sbml/files/libsbml/5.19.0/stable/libSB
     && make \
     && make install \
     && cd ../.. \
-    && rm -fr libSBML-5.19.0-Source
+    && rm -fr libsbml-5.20.2
 
 ## -----------------------------------------------------------------------------------------------
 ## Installing MaBoSS from github repo
 ##
-RUN git clone https://github.com/vincent-noel/MaBoSS-env-2.0 /opt/MaBoSS-env-2.0 \
-    && cd /opt/MaBoSS-env-2.0/engine/src/ \
-    && git checkout feat/sbml \
+RUN git clone https://github.com/sysbio-curie/MaBoSS /opt/MaBoSS \
+    && cd /opt/MaBoSS/engine/src/ \
     && make install SBML_COMPAT=1 \
     && make MAXNODES=128 SBML_COMPAT=1 install \
     && make MAXNODES=256 SBML_COMPAT=1 install \
     && make MAXNODES=512 SBML_COMPAT=1 install \
     && make MAXNODES=1024 SBML_COMPAT=1 install \
-    && mv /opt/MaBoSS-env-2.0/engine/pub/MaBoSS /opt/conda/bin \
-    && mv /opt/MaBoSS-env-2.0/engine/pub/MaBoSS_128n /opt/conda/bin \
-    && mv /opt/MaBoSS-env-2.0/engine/pub/MaBoSS_256n /opt/conda/bin \
-    && mv /opt/MaBoSS-env-2.0/engine/pub/MaBoSS_512n /opt/conda/bin \
-    && mv /opt/MaBoSS-env-2.0/engine/pub/MaBoSS_1024n /opt/conda/bin \
+    && mv /opt/MaBoSS/engine/pub/MaBoSS /opt/conda/bin \
+    && mv /opt/MaBoSS/engine/pub/MaBoSS_128n /opt/conda/bin \
+    && mv /opt/MaBoSS/engine/pub/MaBoSS_256n /opt/conda/bin \
+    && mv /opt/MaBoSS/engine/pub/MaBoSS_512n /opt/conda/bin \
+    && mv /opt/MaBoSS/engine/pub/MaBoSS_1024n /opt/conda/bin \
     && cd ../python \
     && cp -r ../src cmaboss/ \
-    && python3 -m pip install numpy \
-    && python3 -m pip install . \
-    && rm -fr /opt/MaBoSS-env-2.0
+    && /opt/conda/bin/python3 -m pip install --upgrade wheel setuptools numpy \
+    && /opt/conda/bin/python3 -m pip install . \
+    && rm -fr /opt/MaBoSS
     
 ADD requirements.txt /var/webmaboss/requirements.txt
-RUN python3 -m pip install --no-cache-dir --upgrade -r /var/webmaboss/requirements.txt
+RUN /opt/conda/bin/python3 -m pip install --no-cache-dir --upgrade -r /var/webmaboss/requirements.txt
 
 # Exposing port 8000 for server access
 EXPOSE 8000
@@ -115,7 +111,7 @@ RUN \
     
 RUN \
     # Installing chromedriver
-    wget https://chromedriver.storage.googleapis.com/84.0.4147.30/chromedriver_linux64.zip \
+    wget https://chromedriver.storage.googleapis.com/114.0.5735.90/chromedriver_linux64.zip \
     && unzip chromedriver_linux64.zip \
     && mv chromedriver /usr/local/bin \
     && chmod 775 /usr/local/bin/chromedriver \
@@ -123,14 +119,14 @@ RUN \
 
 RUN \
     # Installing geckodriver
-    wget https://github.com/mozilla/geckodriver/releases/download/v0.27.0/geckodriver-v0.27.0-linux64.tar.gz \
-    && tar xvfz geckodriver-v0.27.0-linux64.tar.gz \
+    wget https://github.com/mozilla/geckodriver/releases/download/v0.34.0/geckodriver-v0.34.0-linux64.tar.gz \
+    && tar xvfz geckodriver-v0.34.0-linux64.tar.gz \
     && mv geckodriver /usr/local/bin \
-    && rm geckodriver-v0.27.0-linux64.tar.gz
+    && rm geckodriver-v0.34.0-linux64.tar.gz
 
 RUN \
     # Installing selenium
-    python3 -m pip install --no-cache-dir --upgrade selenium
+    /opt/conda/bin/python3 -m pip install --no-cache-dir --upgrade selenium
 
 FROM webmaboss-base-with-test AS webmaboss-dev
 
@@ -156,7 +152,7 @@ RUN mkdir -p data/media \
     && mkdir -p static
     
 # Removing old server, and creating it from scratch
-RUN python3 manage.py runmodwsgi --setup-only \
+RUN /opt/conda/bin/python3 manage.py runmodwsgi --setup-only \
                                 --host 0.0.0.0 --port 8000 \
                                 --user www-data --group www-data \
                                 --server-root=server/ \

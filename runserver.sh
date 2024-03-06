@@ -6,4 +6,4 @@ fi
 
 yarn && \
 npm run dev && \
-python3 manage.py runserver 0.0.0.0:8000 --insecure
+/opt/conda/bin/python3 manage.py runserver 0.0.0.0:8000 --insecure

@@ -6,8 +6,8 @@ yarn >/dev/null
 echo ">> Initializing database"
 mkdir -p data/db
 mkdir -p data/media
-python manage.py makemigrations > /dev/null
-python manage.py migrate > /dev/null
+/opt/conda/bin/python3 manage.py makemigrations > /dev/null
+/opt/conda/bin/python3 manage.py migrate > /dev/null
 
 echo ">> Creating super user"
-python manage.py createsuperuser
+/opt/conda/bin/python3 manage.py createsuperuser
