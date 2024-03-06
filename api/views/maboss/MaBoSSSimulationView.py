@@ -36,14 +36,9 @@ class MaBoSSSimulationView(HasModel):
 		return Response(serializer.data)
 
 	def post(self, request, project_id, model_id):
-		print("Submitted new simulation")
-		print("> User : %s" % request.user.username)
-		print("> Is anonymous : %s" % request.user.is_anonymous)
-		# print("Entering post function")
-		t0 = time()
+		
 		HasModel.load(self, request, project_id, model_id)
-		t1 = time()
-		# print("Model properties loaded (%.2gs)" % (t1-t0))
+		
 		if self.model.format == LogicalModel.ZGINML:
 			path = join(settings.MEDIA_ROOT, self.model.file.path)
 			ginsim_model = ginsim.load(path)
@@ -120,9 +115,6 @@ class MaBoSSSimulationView(HasModel):
 		else:
 			return HttpResponse(status=500)
 			
-		# t2 = time()
-		# print("Model loaded (%.2gs)" % (t2-t1))
-
 		cfg_settings = loads(request.POST['settings'])
 		maboss_model.param.update(cfg_settings)
 		maboss_model.param['thread_count'] = 6
@@ -145,9 +137,6 @@ class MaBoSSSimulationView(HasModel):
 		server_port = request.POST.get('serverPort')
 
 		thread = Thread(target=run_simulation, args=(maboss_model, maboss_simulation.id, server_host, server_port))
-		# t3 = time()
-		# print("Thread built (%.2gs)" % (t3-t2))
-
 		thread.start()
 		
 		# Here we want to check if there are some models we need to clean
