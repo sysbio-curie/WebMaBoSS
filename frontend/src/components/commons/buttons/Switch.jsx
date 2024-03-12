@@ -1,4 +1,5 @@
 import React from "react";
+import '../../../scss/toggle_switch.scss';
 
 const Switch = props => <label className="switch" key={props.id} style={{"verticalAlign": "text-bottom"}}>
 	<input
