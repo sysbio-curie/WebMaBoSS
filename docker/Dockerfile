@@ -110,7 +110,8 @@ RUN mkdir node_modules \
 RUN mkdir -p data/media \
     && mkdir -p data/db \
     && mkdir -p data/settings \
-    && mkdir -p static
+    && mkdir -p static \
+    && mkdir -p .config/matplotlib
     
 # Removing old server, and creating it from scratch
 RUN /opt/conda/bin/python3 manage.py runmodwsgi --setup-only \
@@ -123,7 +124,7 @@ RUN /opt/conda/bin/python3 manage.py runmodwsgi --setup-only \
                                 --reload-on-changes
 
 RUN chown -R www-data:www-data settings data server static api/migrations frontend/migrations \
-    && chown www-data:www-data .
+    && chown www-data:www-data . && chown www-data:www-data .config/matplotlib
 
 RUN cp -r /var/webmaboss/node_modules/bootstrap/ /var/webmaboss/static \
     && cp -r /var/webmaboss/node_modules/jquery/ /var/webmaboss/static
