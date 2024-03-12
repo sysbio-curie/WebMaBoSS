@@ -31,6 +31,10 @@ class MaBoSSParameterForm extends React.Component {
 
 		this.inputNameRef = React.createRef();
 		this.inputValueRef = React.createRef();
+		
+		this.onNameChange = this.onNameChange.bind(this);
+		this.onValueChange = this.onValueChange.bind(this);
+		this.onSubmit = this.onSubmit.bind(this);
 	}
 
 	onNameChange(name) {
@@ -77,7 +81,7 @@ class MaBoSSParameterForm extends React.Component {
 			this.setState({waitSubmit: true});
 			this.checkParameterCall = APICalls.MaBoSSCalls.checkMaBoSSParameter(
 				this.props.project, this.props.modelId,
-				"whatever_the_name_as_long_as_its_unique",
+				"$whatever_the_name_as_long_as_its_unique",
 				value
 			);
 
@@ -171,7 +175,7 @@ class MaBoSSParameterForm extends React.Component {
 								id="name" name="name" inputRef={this.inputNameRef}
 								value={this.props.name !== null ? this.props.name : this.state.name}
 								error={this.state.nameError} disabled={this.props.name !== null}
-								onValueChange={(e) => this.onNameChange(e.target.value)}
+								onValueChange={this.onNameChange}
 
 							/>
 						</div>
@@ -180,8 +184,8 @@ class MaBoSSParameterForm extends React.Component {
 							<BufferedTextField
 								id="value" name="value" inputRef={this.inputValueRef}
 								value={this.state.value}
-								error={this.state.nameError}
-								onValueChange={(e) => this.onValueChange(e.target.value)}
+								error={this.state.valueError}
+								onValueChange={this.onValueChange}
 
 							/>
 						</div>
@@ -192,7 +196,7 @@ class MaBoSSParameterForm extends React.Component {
 							<Button color="danger" className="mr-auto" onClick={() => this.props.toggle()}>Close</Button>
 							<Button
 								type="submit" color="default" className="ml-auto"
-								onClick={(e) => this.onSubmit(e)} disabled={this.state.waitSubmit}
+								onClick={this.onSubmit} disabled={this.state.waitSubmit}
 							>Submit {this.state.waitSubmit ? <LoadingInlineIcon width="1rem"/> : null}</Button>
 						</ButtonToolbar>
 					</CardFooter>

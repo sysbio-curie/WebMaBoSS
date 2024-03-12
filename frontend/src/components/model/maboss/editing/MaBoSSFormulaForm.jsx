@@ -34,6 +34,7 @@ class MaBoSSFormulaForm extends React.Component {
 
 		this.onFormulaChange = this.onFormulaChange.bind(this);
 		this.onNameChange = this.onNameChange.bind(this);
+		this.onSubmit = this.onSubmit.bind(this);
 	}
 
 
@@ -169,7 +170,7 @@ class MaBoSSFormulaForm extends React.Component {
 							<Button color="danger" className="mr-auto" onClick={() => this.props.toggle()}>Close</Button>
 							<Button
 								type="submit" color="default" className="ml-auto"
-								onClick={(e) => this.onSubmit(e)} disabled={this.state.waitSubmit}
+								onClick={this.onSubmit} disabled={this.state.waitSubmit}
 							>Submit {this.state.waitSubmit ? <LoadingInlineIcon width="1rem"/> : null}</Button>
 						</ButtonToolbar>
 					</CardFooter>
