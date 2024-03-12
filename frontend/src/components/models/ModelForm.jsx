@@ -3,6 +3,7 @@ import {Button, ButtonToolbar, Modal, Card, CardHeader, CardBody, CardFooter} fr
 import APICalls from "../api/apiCalls";
 import MyDropdown from "../commons/buttons/MyDropdown";
 import Switch from "../commons/buttons/Switch";
+import ErrorAlert from "../commons/ErrorAlert";
 
 class ModelForm extends React.Component {
 
@@ -47,7 +48,8 @@ class ModelForm extends React.Component {
 			file2Name: "Select file...",
 			modal: false,
 			type: 'maboss',
-			useSBMLNames: true
+			useSBMLNames: true,
+			errors: []
 		};
 
 		this.toggle = this.toggle.bind(this);
@@ -89,18 +91,24 @@ class ModelForm extends React.Component {
 		}
 		
 		this.importModelCall.promise.then(response => {
-
-			this.setState({
-				id: null,
-				name: "",
-				file: null,
-				fileName: "Select file...",
-				file2: null,
-				modal: false,
-				type: 'maboss'
-			});
-			this.props.hide();
-			this.props.updateParent();
+			console.log(response);
+			if (response.status === 400) {
+				response.json().then(data => {
+					this.setState({errors: data});
+				});
+			} else {
+				this.setState({
+					id: null,
+					name: "",
+					file: null,
+					fileName: "Select file...",
+					file2: null,
+					modal: false,
+					type: 'maboss'
+				});
+				this.props.hide();
+				this.props.updateParent();
+			}
 		});
 	};
 
@@ -150,6 +158,7 @@ class ModelForm extends React.Component {
 					<Card>
 						<CardHeader>{this.state.id !== null ? "Edit" : "Load"} model</CardHeader>
 						<CardBody>
+							<ErrorAlert errorMessages={this.state.errors}/>
 							<div className="form-group">
 								<label htmlFor="modelName">Name</label>
 								<input

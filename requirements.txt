@@ -5,7 +5,7 @@ django-allauth==0.51.0
 django-rest-auth[with_social]==0.9.5
 djangorestframework==3.13.1
 ginsim
-git+https://github.com/colomoto/pyMaBoSS.git
+maboss==0.8.7
 mysqlclient==2.1.1
 PyYAML
 scikit-learn

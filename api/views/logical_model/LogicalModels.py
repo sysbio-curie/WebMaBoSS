@@ -1,6 +1,6 @@
 from rest_framework.response import Response
 from rest_framework import status
-from rest_framework.exceptions import PermissionDenied, NotFound
+from rest_framework.exceptions import PermissionDenied, NotFound, ValidationError
 
 from api.models import LogicalModel
 from api.serializers import LogicalModelSerializer
@@ -69,6 +69,16 @@ def bnet_to_maboss(path):
 	maboss_model.print_cfg(open(cfg_file[1], 'w'))
 	return (bnd_file[1], cfg_file[1])
 	
+def check_maboss_model(bnd_file, cfg_file):
+
+	message = []
+	try:
+		sim = maboss.load(bnd_file, cfg_file, cmaboss=True)
+		sim.check()
+	except Exception as e:
+		return [str(e)]
+	
+	return message
 class LogicalModels(HasProject):
 	permission_classes = (permissions.AllowAny,)
 
@@ -161,20 +171,45 @@ class LogicalModels(HasProject):
 				os.remove(sbml_file[1])
 			
 		elif 'file2' in request.data.keys():
+			
+			tmp_bnd_path = tempfile.mkstemp(suffix=".bnd")
+			tmp_cfg_path = tempfile.mkstemp(suffix=".cfg")
+			
+			with open(tmp_bnd_path[1], 'wb') as f:
+				f.write(bnd_file.read())
+			with open(tmp_cfg_path[1], 'wb') as f:
+				f.write(cfg_file.read())
+	
+			message = check_maboss_model(tmp_bnd_path[1], tmp_cfg_path[1])
+			
+			if len(message) > 0:
+				raise ValidationError("Invalid MaBoSS model : " + message[0])
+			
 			LogicalModel(
 				project=self.project,
 				name=request.data['name'],
 				bnd_file=request.data['file'],
 				cfg_file=request.data['file2'],
 				format=LogicalModel.MABOSS
-			).save()
+			).save()	
+	
+			os.remove(tmp_bnd_path[1])
+			os.remove(tmp_cfg_path[1])
 
 		elif request.data['file'].name.endswith(".zginml"):
 			ginsim_file = tempfile.mkstemp(suffix=".zginml")
 			with open(ginsim_file[0], 'wb') as f:				
 				f.write(request.data['file'].read())
 
-			bnd_file, cfg_file = ginsim_to_maboss(ginsim_file[1])
+			try:
+				bnd_file, cfg_file = ginsim_to_maboss(ginsim_file[1])
+			except Exception as e:
+				raise ValidationError("Error during conversion to MaBoSS : " + str(e))
+		
+			message = check_maboss_model(bnd_file, cfg_file)
+			
+			if len(message) > 0:
+				raise ValidationError("Conversion produced an invalid MaBoSS model : " + message[0])
 			
 			LogicalModel(
 				project=self.project,
@@ -183,13 +218,26 @@ class LogicalModels(HasProject):
 				cfg_file=File(open(cfg_file, 'rb'), name=os.path.basename(cfg_file)),
 				format=LogicalModel.MABOSS			
 			).save()
+			
+			os.remove(ginsim_file[1])
+			os.remove(bnd_file)
+			os.remove(cfg_file)
 		
 		elif request.data['file'].name.endswith(".bnet"):
 			bnet_file = tempfile.mkstemp(suffix=".bnet")
 			with open(bnet_file[0], 'wb') as f:				
 				f.write(request.data['file'].read())
 
-			bnd_file, cfg_file = bnet_to_maboss(bnet_file[1])
+			try:
+				bnd_file, cfg_file = bnet_to_maboss(bnet_file[1])
+			except Exception as e:
+				raise ValidationError("Error during conversion to MaBoSS : " + str(e))
+					
+			message = check_maboss_model(bnd_file, cfg_file)
+			
+			if len(message) > 0:
+				raise ValidationError("Conversion produced an invalid MaBoSS model : " + message[0])
+			
 			LogicalModel(
 				project=self.project,
 				name=request.data['name'],
@@ -198,14 +246,26 @@ class LogicalModels(HasProject):
 				format=LogicalModel.MABOSS			
 			).save()
 			
+			os.remove(bnet_file[1])
+			os.remove(bnd_file)
+			os.remove(cfg_file)
+			
 		else:
 			sbml_file = tempfile.mkstemp(suffix=".sbml")
 			with open(sbml_file[0], 'wb') as f:				
 				f.write(request.data['file'].read())
 
-			bnd_file, cfg_file, layout_file = sbml_to_maboss(
-				sbml_file[1], request.data['use_sbml_names'].lower() == "true"
-			)
+			try:
+				bnd_file, cfg_file, layout_file = sbml_to_maboss(
+					sbml_file[1], request.data['use_sbml_names'].lower() == "true"
+				)
+			except Exception as e:
+				raise ValidationError("Error during conversion to MaBoSS : " + str(e))
+			
+			message = check_maboss_model(bnd_file, cfg_file)
+			
+			if len(message) > 0:
+				raise ValidationError("Conversion produced an invalid MaBoSS model : " + message[0])
 			
 			LogicalModel(
 				project=self.project,
