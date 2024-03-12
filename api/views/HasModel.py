@@ -101,6 +101,10 @@ class HasModel(HasProject):
 		elif self.model.format == LogicalModel.SBML:
 			maboss_sim = maboss.loadSBML(join(settings.MEDIA_ROOT, self.model.file.path))
 			return maboss.to_minibn(maboss_sim)
+		elif self.model.format == LogicalModel.ZGINML:
+			ginsim_model = ginsim.load(join(settings.MEDIA_ROOT, self.model.file.path))
+			biolqm_model = ginsim.to_biolqm(ginsim_model)
+			return biolqm.to_minibn(biolqm_model)
 		else:
 			raise MethodNotAllowed()
 
