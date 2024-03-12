@@ -1,0 +1,72 @@
+name: Linux
+
+on:
+  release:
+    types: [created]
+
+jobs:
+    
+  publish_docker_hub:
+    name: Publishing WebMaBoSS docker to DockerHub
+    runs-on: ubuntu-22.04
+    if: github.event_name == 'release' && github.event.action == 'created' && github.repository == 'sysbio-curie/WebMaBoSS'
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Start WebMaBoSS docker
+      run: |
+        docker-compose build webmaboss
+
+    - name: Connect Docker Hub
+      run: |
+        echo ${{ secrets.DOCKERHUB_TOKEN }} | docker login --username ${{ secrets.DOCKERHUB_USERNAME }} --password-stdin
+        
+    - name: Upload Docker Hub
+      run: | 
+        docker tag docker.io/sysbiocurie/webmaboss:${{ github.event.release.tag_name }} sysbiocurie/webmaboss:${{ github.event.release.tag_name }}
+        docker push sysbiocurie/webmaboss:${{ github.event.release.tag_name }}
+        docker tag sysbiocurie/webmaboss:${{ github.event.release.tag_name }} sysbiocurie/webmaboss:latest 
+        docker push sysbiocurie/webmaboss:latest
+        docker tag docker.io/sysbiocurie/webmaboss:${{ github.event.release.tag_name }} vnoel/webmaboss:${{ github.event.release.tag_name }}
+        docker push vnoel/webmaboss:${{ github.event.release.tag_name }}
+        docker tag sysbiocurie/webmaboss:latest vnoel/webmaboss:latest
+        docker push vnoel/webmaboss:latest
+        
+  publish_docker_github:
+    name: Publishing WebMaBoSS docker container to GitHub
+    runs-on: ubuntu-22.04
+    if: github.event_name == 'release' && github.event.action == 'created' && github.repository == 'sysbio-curie/WebMaBoSS'
+    
+    env:
+        REGISTRY: ghcr.io
+        IMAGE_NAME: webmaboss
+
+    permissions:
+        contents: read
+        packages: write
+    steps:
+    - uses: actions/checkout@v4
+          
+    - name: Log in to the Container registry
+      uses: docker/login-action@v3
+      with:
+        registry: ${{ env.REGISTRY }}
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Extract metadata (tags, labels) for Docker
+      id: meta
+      uses: docker/metadata-action@v5
+      with:
+        images: ${{ env.REGISTRY }}/${{ github.repository_owner }}/${{ env.IMAGE_NAME }}
+
+    - name: Build and push Docker image
+      uses: docker/build-push-action@v5
+      with:
+        context: .
+        file: docker/Dockerfile
+        push: true
+        tags: ${{ env.REGISTRY }}/${{ github.repository_owner }}/${{ env.IMAGE_NAME }}:${{ github.event.release.tag_name }},${{ env.REGISTRY }}/${{ github.repository_owner }}/${{ env.IMAGE_NAME }}:latest
+        labels: ${{ steps.meta.outputs.labels }}
+      
