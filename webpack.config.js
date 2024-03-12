@@ -22,7 +22,9 @@ module.exports = {
       }, {
         test: /\.(eot|ttf|woff|woff2)$/,
 		include: path.resolve(__dirname, 'frontend/src'),
-        use:[{loader: 'file-loader?name=public/fonts/[name].[ext]'}]
+        use:[{
+			loader: 'file-loader?name=public/fonts/[name].[ext]'
+		}]
 	  }, {
 		test: /\.scss$/,
 		include: path.resolve(__dirname, 'frontend/src'),
@@ -31,15 +33,15 @@ module.exports = {
 			"css-loader", // translates CSS into CommonJS
 			"sass-loader" // compiles Sass to CSS, using Node Sass by default
 		]
-	  }
-	  , {
+	  }, {
 		test: /\.(gif|png|jpe?g|svg|ico)$/i,
-		include: path.resolve(__dirname, 'frontend/src'),
+		include: path.resolve(__dirname, 'frontend/src/images'),
   		use: [{
 			loader: 'file-loader',
 			options: {
 				name: '[path][name].[ext]',
-				outputPath: '../images/',
+				context: 'frontend/src/images',
+				outputPath: "../images/",
 			},
 		}]
 	  }

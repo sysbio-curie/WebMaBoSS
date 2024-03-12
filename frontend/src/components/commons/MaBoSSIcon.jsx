@@ -1,6 +1,6 @@
 import React from "react";
 
-import '../../images/maboss_logo.jpg';
+import maboss_logo from '../../images/maboss_logo.jpg';
 
 class MaBoSSIcon extends React.Component {
 
@@ -8,7 +8,7 @@ class MaBoSSIcon extends React.Component {
 
 		return <div align="center">
 			<img
-				src={"/static/images/maboss_logo.jpg"}
+				src={maboss_logo}
 				style={{width: this.props.width}} />
 		</div>;
 	}

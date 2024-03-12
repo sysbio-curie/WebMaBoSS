@@ -1,9 +1,9 @@
 import React from "react";
-import '../../images/Investissements_davenir.jpeg';
+import logo_ia from '../../images/Investissements_davenir.jpeg';
 
 const Investissements_davenir = props => <div align="center">
 <img
-	src={"/static/images/Investissements_davenir.jpeg"}
+	src={logo_ia}
 	style={{width: props.width}} />
 </div>;
 

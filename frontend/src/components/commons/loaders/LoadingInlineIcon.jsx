@@ -1,13 +1,13 @@
 import React from "react";
 
-import '../../../images/loading.svg';
-import '../../../images/loading_dark.svg';
+import loading_icon from '../../../images/loading.svg';
+import loading_icon_dark from '../../../images/loading_dark.svg';
 
 class LoadingInlineIcon extends React.Component {
 
 	render() {
 
-		const src = this.props.dark !== undefined ? "/static/images/loading_dark.svg" : "/static/images/loading.svg";
+		const src = this.props.dark !== undefined ? loading_icon_dark : loading_icon;
 		return <span align="center" className={"d-inline-flex" + " " + this.props.className}>
 			<img
 				src={src}
