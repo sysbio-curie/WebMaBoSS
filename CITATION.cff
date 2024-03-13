@@ -1,0 +1,58 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite it as below."
+authors:
+- family-names: "Noël"
+  given-names: "Vincent"
+  orcid: "https://orcid.org/0000-0003-3448-291X"
+- family-names: "Ruscone"
+  given-names: "Marco"
+  orcid: "https://orcid.org/0000-0002-7607-0203"
+- family-names: "Stoll"
+  given-names: "Gautier"
+  orcid: "https://orcid.org/0000-0002-0862-4139"
+- family-names: "Viara"
+  given-names: "Eric"
+- family-names: "Zinovyev"
+  given-names: "Andrei"
+  orcid: "https://orcid.org/0000-0002-9517-7284"
+- family-names: "Barillot"
+  given-names: "Emmanuel"
+  orcid: "https://orcid.org/0000-0003-2724-2002"
+- family-names: "Calzone"
+  given-names: "Laurence"
+  orcid: "https://orcid.org/0000-0002-7835-1148"
+title: "WebMaBoSS: A Web Interface for Simulating Boolean Models Stochastically"
+version: 1.0.2
+date-released: 2023-03-13
+url: "https://github.com/sysbio-curie/WebMaBoSS"
+preferred-citation:
+  type: article
+  authors:
+  - family-names: "Noël"
+    given-names: "Vincent"
+    orcid: "https://orcid.org/0000-0003-3448-291X"
+  - family-names: "Ruscone"
+    given-names: "Marco"
+    orcid: "https://orcid.org/0000-0002-7607-0203"
+  - family-names: "Stoll"
+    given-names: "Gautier"
+    orcid: "https://orcid.org/0000-0002-0862-4139"
+  - family-names: "Viara"
+    given-names: "Eric"
+  - family-names: "Zinovyev"
+    given-names: "Andrei"
+    orcid: "https://orcid.org/0000-0002-9517-7284"
+  - family-names: "Barillot"
+    given-names: "Emmanuel"
+    orcid: "https://orcid.org/0000-0003-2724-2002"
+  - family-names: "Calzone"
+    given-names: "Laurence"
+    orcid: "https://orcid.org/0000-0002-7835-1148"
+  title: "WebMaBoSS: A Web Interface for Simulating Boolean Models Stochastically"
+  journal: Frontiers in Molecular Biosciences
+  doi:  10.3389/fmolb.2021.754444
+  month: 11
+  volume: 8
+  start: 754444
+  year: 2021
+  url: "https://www.frontiersin.org/articles/10.3389/fmolb.2021.754444/"
