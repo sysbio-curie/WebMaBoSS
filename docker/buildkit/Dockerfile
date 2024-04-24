@@ -13,7 +13,7 @@ RUN apt-get update -qq && \
                           curl software-properties-common nano git apt-transport-https \
                           apache2 apache2-dev mariadb-client libmariadb-dev graphviz unzip \
                           flex bison g++ make cmake libxml2-dev libbz2-dev zlib1g-dev \
-    && apt-get clean -y \
+    && apt-get clean -y
 ##-----------------------------------------------------------------------------------------------
 ## base conda environment
 ## 
