@@ -59,7 +59,7 @@ def ginsim_to_maboss(path):
 	
 def bnet_to_maboss(path):
 	print("Converting bnet %s to maboss" % path)
-	maboss_model = maboss.loadBNetCMaBoSS(path)
+	maboss_model = maboss.loadBNet(path)
 	
 	bnd_file = tempfile.mkstemp(suffix=".bnd")
 	cfg_file = tempfile.mkstemp(suffix=".cfg")
@@ -176,9 +176,9 @@ class LogicalModels(HasProject):
 			tmp_cfg_path = tempfile.mkstemp(suffix=".cfg")
 			
 			with open(tmp_bnd_path[1], 'wb') as f:
-				f.write(bnd_file.read())
+				f.write(request.data['file'].read())
 			with open(tmp_cfg_path[1], 'wb') as f:
-				f.write(cfg_file.read())
+				f.write(request.data['file2'].read())
 	
 			message = check_maboss_model(tmp_bnd_path[1], tmp_cfg_path[1])
 			
