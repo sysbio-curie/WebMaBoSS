@@ -91,9 +91,8 @@
                             },
                         ).then(res =>res.json()
                         ).then(res => {
-                            console.log(res);
                             if (res.status === false) {
-                                window.location.reload();
+                                window.location = window.location.href;
                             }
                         });
                     }, 1000);

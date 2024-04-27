@@ -6,7 +6,7 @@ class LogicalmodellingConfig(AppConfig):
 
     def ready(self):
         
-        if settings.DATABASES['default']['HOST'] is not None:
-        
+        if settings.DATABASES['default']['HOST'] is not None and not settings.RUN_INSTALL:
+            
             from api.models.common import create_guest_account
             create_guest_account()

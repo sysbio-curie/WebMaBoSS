@@ -205,7 +205,6 @@ else:
 
         'django.contrib.sites',
         'rest_framework',
-        'rest_framework.authtoken',
         'rest_auth',
         'rest_auth.registration',
         'allauth',
@@ -274,3 +273,7 @@ else:
         os.path.join(BASE_DIR, 'node_modules/'),
     )
 
+    REST_FRAMEWORK = {
+        'DEFAULT_AUTHENTICATION_CLASSES': [],
+        'DEFAULT_PERMISSION_CLASSES': []
+    }

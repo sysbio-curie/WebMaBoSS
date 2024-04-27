@@ -5,7 +5,10 @@ from rest_framework import status
 from django.conf import settings
 
 class InstallStatus(APIView):
-
+	
+	authentication_classes = [] #disables authentication
+	permission_classes = [] #disables permission
+	
 	def __init__(self, *args, **kwargs):
 		APIView.__init__(self, *args, **kwargs)
 		self.data = {}
