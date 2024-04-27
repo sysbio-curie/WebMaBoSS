@@ -1,0 +1,11 @@
+url_path,views_total,views_unique
+/sysbio-curie/WebMaBoSS,15,5
+/sysbio-curie/WebMaBoSS/actions,8,1
+/sysbio-curie/WebMaBoSS/actions/runs/8824112352,4,1
+/sysbio-curie/WebMaBoSS/releases/tag/1.0.1,3,1
+/sysbio-curie/WebMaBoSS/actions/runs/8271003501,2,1
+/sysbio-curie/WebMaBoSS/actions/runs/8824112352/job/24225927737,2,1
+/sysbio-curie/WebMaBoSS/blob/master/api/views/logical_model/LogicalModels.py,2,1
+/sysbio-curie/WebMaBoSS/commits/master/api/views/logical_model/LogicalModels.py,2,1
+/sysbio-curie/WebMaBoSS/releases/tag/1.0.2,2,1
+/sysbio-curie/WebMaBoSS/tree/github-repo-stats/sysbio-curie/WebMaBoSS,2,1
