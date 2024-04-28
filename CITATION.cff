@@ -22,7 +22,7 @@ authors:
   given-names: "Laurence"
   orcid: "https://orcid.org/0000-0002-7835-1148"
 title: "WebMaBoSS: A Web Interface for Simulating Boolean Models Stochastically"
-version: 1.0.3
+version: 1.0.4
 date-released: 2023-03-13
 url: "https://github.com/sysbio-curie/WebMaBoSS"
 preferred-citation:
