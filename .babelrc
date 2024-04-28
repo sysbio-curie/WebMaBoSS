@@ -3,7 +3,7 @@
         "@babel/env", "@babel/react"
     ],
     "plugins": [
-        "@babel/plugin-proposal-class-properties",
+        "@babel/plugin-transform-class-properties",
         ["transform-imports", {
             "@fortawesome/free-solid-svg-icons": {
             "transform": "@fortawesome/free-solid-svg-icons/${member}",
