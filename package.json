@@ -8,7 +8,7 @@
     "help": "webpack --help=verbose",
     "dev": "webpack --mode development",
     "build": "webpack --mode production",
-    "explorer": "source-map-explorer --html ./frontend/static/js/index.js > tree.html"
+    "explorer": "source-map-explorer ./frontend/static/js/index.js --html > tree.html"
   },
   "keywords": [],
   "author": "",
