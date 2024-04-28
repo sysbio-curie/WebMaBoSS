@@ -64,7 +64,7 @@ RUN wget https://github.com/sbmlteam/libsbml/archive/refs/tags/v5.20.2.tar.gz \
     && make \
     && make install \
     && cd ../.. \
-    && rm -fr libsbml-5.20.2
+    && rm -fr libsbml-5.20.2 v5.20.2.tar.gz
 
 ## -----------------------------------------------------------------------------------------------
 ## Installing MaBoSS from github repo
@@ -171,7 +171,7 @@ RUN cp -r /var/webmaboss/node_modules/bootstrap/ /var/webmaboss/static \
 # -------------------------------------------------------------------------------------------------
 # Cleanup    
 RUN rm -rf /var/lib/apt/lists/* \
-    && rm -rf /var/webmaboss/node_modules/* yarn.lock
+    && rm -rf /var/webmaboss/node_modules/*
 
 
 # Switching to apache user
