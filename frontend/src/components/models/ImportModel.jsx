@@ -121,9 +121,7 @@ class ImportModel extends React.Component {
 					<div className="container-fluid d-flex justify-content-between">
 						<div className="form-group general mr-auto">
 						<Switch checked={this.state.useSBMLNames} toggle={this.toggleSBMLNames} id={"use_sbml_names"}/>
-						{'\u00A0\u00A0'}
-						<label className="name">Use SBML names</label>
-							
+						<label className="name" style={{marginLeft: '1em'}}>Use SBML names</label>	
 						</div>
 						{/* <ButtonToolbar className="d-flex"> */}
 						<Button color="danger" className="ml-auto" onClick={() => this.props.hide()}>Close</Button>

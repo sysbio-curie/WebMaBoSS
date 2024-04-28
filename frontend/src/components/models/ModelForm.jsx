@@ -216,9 +216,7 @@ class ModelForm extends React.Component {
 									{( this.state.type === "sbml" ?
 									<div className="form-group general mr-auto">
 									<Switch checked={this.state.useSBMLNames} toggle={this.toggleSBMLNames} id={"use_sbml_names"}/>
-									{'\u00A0\u00A0'}
-									<label className="name">Use SBML names</label>
-										
+									<label className="name" style={{marginLeft: '1em'}}>Use SBML names</label>
 									</div> : null )}
 								</React.Fragment> : null }
 								
