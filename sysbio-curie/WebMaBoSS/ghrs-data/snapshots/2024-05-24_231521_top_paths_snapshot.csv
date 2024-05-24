@@ -1,0 +1,9 @@
+url_path,views_total,views_unique
+/sysbio-curie/WebMaBoSS,6,5
+/sysbio-curie/WebMaBoSS/blob/master/docker-compose.yml,4,1
+/sysbio-curie/WebMaBoSS/actions,2,1
+/sysbio-curie/WebMaBoSS/actions/runs/8866911201,2,1
+/sysbio-curie/WebMaBoSS/actions/workflows/deploy-docker.yml,2,1
+/sysbio-curie/WebMaBoSS/commits,2,1
+/sysbio-curie/WebMaBoSS/actions/runs/8866911201/job/24344892696,1,1
+/sysbio-curie/WebMaBoSS/actions/runs/8866911201/workflow,1,1
