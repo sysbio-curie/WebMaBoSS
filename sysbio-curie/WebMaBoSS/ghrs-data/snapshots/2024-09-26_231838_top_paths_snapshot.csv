@@ -1,0 +1,11 @@
+url_path,views_total,views_unique
+/sysbio-curie/WebMaBoSS/tree/master/api,16,2
+/sysbio-curie/WebMaBoSS/tree/master/api/defaults/models,6,1
+/sysbio-curie/WebMaBoSS/tree/master/api/models,5,2
+/sysbio-curie/WebMaBoSS/tree/master/api/views,5,2
+/sysbio-curie/WebMaBoSS/blob/master/api/views/logical_model/LogicalModel.py,5,1
+/sysbio-curie/WebMaBoSS/blob/master/tutorials/Tutorial_Cohen.pdf,4,2
+/sysbio-curie/WebMaBoSS/tree/master/api/views/logical_model,4,1
+/sysbio-curie/WebMaBoSS,2,2
+/sysbio-curie/WebMaBoSS/blob/master/api/models/logical_model.py,2,1
+/sysbio-curie/WebMaBoSS/blob/master/api/views/HasModel.py,2,1
