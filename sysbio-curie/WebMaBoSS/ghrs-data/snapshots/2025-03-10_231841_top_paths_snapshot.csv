@@ -1,0 +1,11 @@
+url_path,views_total,views_unique
+/sysbio-curie/WebMaBoSS,14,7
+/sysbio-curie/WebMaBoSS/tree/master/frontend,4,2
+/sysbio-curie/WebMaBoSS/tree/master,2,1
+/sysbio-curie/WebMaBoSS/tree/master/frontend/src,2,1
+/sysbio-curie/WebMaBoSS/tree/master/frontend/src/components,2,1
+/sysbio-curie/WebMaBoSS/tree/master/settings,2,1
+/sysbio-curie/WebMaBoSS/actions,1,1
+/sysbio-curie/WebMaBoSS/blob/master/frontend/apps.py,1,1
+/sysbio-curie/WebMaBoSS/blob/master/frontend/InstallView.py,1,1
+/sysbio-curie/WebMaBoSS/blob/master/settings/install_urls.py,1,1
