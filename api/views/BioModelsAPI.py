@@ -10,7 +10,7 @@ class BioModelsAPI(APIView):
     
     def get(self, request):
         
-        response = requests.get('https://www.ebi.ac.uk/biomodels/search?query=Logical%20model&numResults=100', headers={'accept': 'application/json'}).json()
+        response = requests.get('https://www.biomodels.org/search?query=modellingapproach%3A%22logical%20model%22&numResults=100&format=json', headers={'accept': '*/*'}).json()
         # count = response["matches"]
         models = response["models"]
         return Response([{'id' : model["id"], 'name': model["name"], 'author': model["submitter"]} for model in models])

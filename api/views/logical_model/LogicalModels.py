@@ -117,7 +117,7 @@ class LogicalModels(HasProject):
 		# try:
 		if 'url' in request.data.keys():
 			print(request.data['url'])
-			if request.data['url'].startswith("https://www.ebi.ac.uk"):
+			if request.data['url'].startswith("https://www.biomodels.org"):
 				zip_filename = tempfile.mkstemp(suffix=".zip")
 				os.close(zip_filename[0])
 				urlretrieve(request.data['url'], zip_filename[1])

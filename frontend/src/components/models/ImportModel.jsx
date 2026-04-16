@@ -105,7 +105,7 @@ class ImportModel extends React.Component {
 								useSBMLNames={this.state.useSBMLNames}
 							/>
 						</TabPane>
-						<TabPane tabId="cellcollective" style={{overflowY: "auto", height: '400px', width: '760px', textOverflow: 'ellipsis' }}>
+						{/*<TabPane tabId="cellcollective" style={{overflowY: "auto", height: '400px', width: '760px', textOverflow: 'ellipsis' }}>
 							<ImportModelFromCC
 								project={this.props.project}
 								updateParent={this.props.updateParent}
@@ -113,7 +113,7 @@ class ImportModel extends React.Component {
 								showErrors={this.props.showErrors}
 								useSBMLNames={this.state.useSBMLNames}
 							/>
-						</TabPane>
+						</TabPane>*/}
 					</TabContent>
 				
 				</ModalBody>
