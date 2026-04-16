@@ -1,4 +1,4 @@
-FROM debian:12.5-slim
+FROM debian:13.4-slim
 
 USER root
 WORKDIR /var/webmaboss
@@ -10,22 +10,24 @@ WORKDIR /var/webmaboss
 RUN apt-get update -qq && \
     apt-get install -yq --no-install-recommends ca-certificates wget pkg-config \
                           python3 python3-dev python3-pip \
-                          curl software-properties-common nano git apt-transport-https \
+                          curl \
+                          #software-properties-common \
+                          nano git apt-transport-https \
                           apache2 apache2-dev mariadb-client libmariadb-dev graphviz unzip \
                           flex bison g++ make cmake libxml2-dev libbz2-dev zlib1g-dev \
     && apt-get clean -y 
 ##-----------------------------------------------------------------------------------------------
 ## base conda environment
 ## 
-RUN wget --quiet https://repo.anaconda.com/miniconda/Miniconda3-py312_24.1.2-0-Linux-x86_64.sh -O ~/miniconda.sh && \
-    /bin/bash ~/miniconda.sh -b -p /opt/conda && \
-    rm ~/miniconda.sh 
+RUN wget --quiet https://github.com/conda-forge/miniforge/releases/latest/download/Miniforge3-Linux-x86_64.sh -O ~/miniforge.sh && \
+    /bin/bash ~/miniforge.sh -b -p /opt/conda && \
+    rm ~/miniforge.sh 
     
 ENV PATH="${PATH}:/opt/conda/bin"
 
 RUN conda config --set auto_update_conda False \
     && conda install --no-update-deps -y \
-        -c colomoto -c conda-forge ginsim \
+        -c colomoto -c conda-forge ginsim pymaboss python=3.12 'expat<2.7.2' \
     && conda clean -y --all && rm -rf /opt/conda/pkgs
 
 ## -----------------------------------------------------------------------------------------------
@@ -39,57 +41,58 @@ RUN curl -sL https://deb.nodesource.com/setup_20.x | bash - \
 ## -----------------------------------------------------------------------------------------------
 ## Installing libSBML
 ##
-RUN wget https://github.com/sbmlteam/libsbml/archive/refs/tags/v5.20.2.tar.gz \
-    && tar -zxf v5.20.2.tar.gz \
-    && cd libsbml-5.20.2 \
-    && mkdir build \
-    && cd build \
-    && cmake -DCMAKE_INSTALL_PREFIX=/usr \
-        -DCMAKE_INSTALL_LIBDIR=/usr/lib \
-        -DCMAKE_CXX_COMPILER=g++ \
-        -DCMAKE_C_COMPILER=gcc \
-        -DCMAKE_CXX_STANDARD_LIBRARIES=-lxml2 \
-        -DWITH_SWIG=OFF \
-        -DLIBXML_LIBRARY=/usr/lib/x86_64-linux-gnu/libxml2.so \
-        -DLIBXML_INCLUDE_DIR=/usr/include/libxml2 \
-        -DENABLE_COMP=ON \
-        -DENABLE_FBC=ON \
-        -DENABLE_GROUPS=ON \
-        -DENABLE_LAYOUT=ON \
-        -DENABLE_MULTI=ON \
-        -DENABLE_QUAL=ON \
-        -DENABLE_RENDER=ON \
-        -DENABLE_DISTRIB=ON \
-        .. \
-    && make \
-    && make install \
-    && cd ../.. \
-    && rm -fr libsbml-5.20.2 v5.20.2.tar.gz
+# RUN wget https://github.com/sbmlteam/libsbml/archive/refs/tags/v5.20.2.tar.gz \
+#     && tar -zxf v5.20.2.tar.gz \
+#     && cd libsbml-5.20.2 \
+#     && mkdir build \
+#     && cd build \
+#     && cmake -DCMAKE_INSTALL_PREFIX=/usr \
+#         -DCMAKE_INSTALL_LIBDIR=/usr/lib \
+#         -DCMAKE_CXX_COMPILER=g++ \
+#         -DCMAKE_C_COMPILER=gcc \
+#         -DCMAKE_CXX_STANDARD_LIBRARIES=-lxml2 \
+#         -DWITH_SWIG=OFF \
+#         -DLIBXML_LIBRARY=/usr/lib/x86_64-linux-gnu/libxml2.so \
+#         -DLIBXML_INCLUDE_DIR=/usr/include/libxml2 \
+#         -DENABLE_COMP=ON \
+#         -DENABLE_FBC=ON \
+#         -DENABLE_GROUPS=ON \
+#         -DENABLE_LAYOUT=ON \
+#         -DENABLE_MULTI=ON \
+#         -DENABLE_QUAL=ON \
+#         -DENABLE_RENDER=ON \
+#         -DENABLE_DISTRIB=ON \
+#         .. \
+#     && make \
+#     && make install \
+#     && cd ../.. \
+#     && rm -fr libsbml-5.20.2 v5.20.2.tar.gz
 
-## -----------------------------------------------------------------------------------------------
-## Installing MaBoSS from github repo
-##
-RUN git clone https://github.com/sysbio-curie/MaBoSS /opt/MaBoSS \
-    && cd /opt/MaBoSS/engine/src/ \
-    && make install SBML_COMPAT=1 \
-    && make MAXNODES=128 SBML_COMPAT=1 install \
-    && make MAXNODES=256 SBML_COMPAT=1 install \
-    && make MAXNODES=512 SBML_COMPAT=1 install \
-    && make MAXNODES=1024 SBML_COMPAT=1 install \
-    && mv /opt/MaBoSS/engine/pub/MaBoSS /opt/conda/bin \
-    && mv /opt/MaBoSS/engine/pub/MaBoSS_128n /opt/conda/bin \
-    && mv /opt/MaBoSS/engine/pub/MaBoSS_256n /opt/conda/bin \
-    && mv /opt/MaBoSS/engine/pub/MaBoSS_512n /opt/conda/bin \
-    && mv /opt/MaBoSS/engine/pub/MaBoSS_1024n /opt/conda/bin \
-    && cd ../python \
-    && cp -r ../src cmaboss/ \
-    && /opt/conda/bin/python3 -m pip install --upgrade wheel setuptools numpy \
-    && /opt/conda/bin/python3 -m pip install . \
-    && rm -fr /opt/MaBoSS
-    
-ADD requirements.txt /var/webmaboss/requirements.txt
-RUN /opt/conda/bin/python3 -m pip install --no-cache-dir --upgrade -r /var/webmaboss/requirements.txt
-
+# ## -----------------------------------------------------------------------------------------------
+# ## Installing MaBoSS from github repo
+# ##
+# RUN git clone https://github.com/sysbio-curie/MaBoSS /opt/MaBoSS \
+#     && cd /opt/MaBoSS/engine/src/ \
+#     && make install SBML_COMPAT=1 \
+#     && make MAXNODES=128 SBML_COMPAT=1 install \
+#     && make MAXNODES=256 SBML_COMPAT=1 install \
+#     && make MAXNODES=512 SBML_COMPAT=1 install \
+#     && make MAXNODES=1024 SBML_COMPAT=1 install \
+#     && mv /opt/MaBoSS/engine/pub/MaBoSS /opt/conda/bin \
+#     && mv /opt/MaBoSS/engine/pub/MaBoSS_128n /opt/conda/bin \
+#     && mv /opt/MaBoSS/engine/pub/MaBoSS_256n /opt/conda/bin \
+#     && mv /opt/MaBoSS/engine/pub/MaBoSS_512n /opt/conda/bin \
+#     && mv /opt/MaBoSS/engine/pub/MaBoSS_1024n /opt/conda/bin \
+#     && cd ../python \
+#     && cp -r ../src cmaboss/ \
+#     && /opt/conda/bin/python3 -m pip install --upgrade wheel setuptools numpy \
+#     && /opt/conda/bin/python3 -m pip install . \
+#     && rm -fr /opt/MaBoSS \
+#     && ls /var/ \
+#     && ls /var/webmaboss
+RUN /opt/conda/bin/python3 -m pip install --upgrade wheel setuptools==81.0.0 numpy
+ADD ../../requirements.txt /var/webmaboss/requirements.txt
+RUN /opt/conda/bin/python3 -m pip install --no-cache-dir --upgrade -r /var/webmaboss/requirements.txt 
 # Exposing port 8000 for server access
 EXPOSE 8000
 
@@ -132,7 +135,9 @@ RUN cp -r /var/webmaboss/node_modules/bootstrap/ /var/webmaboss/static \
 # -------------------------------------------------------------------------------------------------
 # Cleanup    
 RUN rm -rf /var/lib/apt/lists/* \
-    && rm -rf /var/webmaboss/node_modules/*
+    && rm -rf /var/webmaboss/node_modules/* \
+    && rm -rf /opt/conda/pkgs/*
+
 
 
 # Switching to apache user
