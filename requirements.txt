@@ -5,10 +5,11 @@ django-allauth==0.51.0
 django-rest-auth[with_social]==0.9.5
 djangorestframework==3.13.1
 ginsim
-maboss==0.8.7
+maboss==0.8.13
 mysqlclient==2.1.1
 PyYAML
 scikit-learn
 networkx
 pydot
 python-libsbml
+tabularqual

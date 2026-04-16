@@ -69,6 +69,18 @@ def bnet_to_maboss(path):
 	maboss_model.print_cfg(open(cfg_file[1], 'w'))
 	return (bnd_file[1], cfg_file[1])
 	
+def tabularqual_to_maboss(path):
+	print("Converting tabularqual %s to maboss" % path)
+	maboss_model = maboss.loadTabularQual(path)
+	
+	bnd_file = tempfile.mkstemp(suffix=".bnd")
+	cfg_file = tempfile.mkstemp(suffix=".cfg")
+	os.close(bnd_file[0])
+	os.close(cfg_file[0])
+	maboss_model.print_bnd(open(bnd_file[1], 'w'))
+	maboss_model.print_cfg(open(cfg_file[1], 'w'))
+	return (bnd_file[1], cfg_file[1])
+
 def check_maboss_model(bnd_file, cfg_file):
 
 	message = []
@@ -247,6 +259,33 @@ class LogicalModels(HasProject):
 			).save()
 			
 			os.remove(bnet_file[1])
+			os.remove(bnd_file)
+			os.remove(cfg_file)
+			
+		elif request.data['file'].name.endswith(".xlsx"):
+			tabularqual_file = tempfile.mkstemp(suffix=".xlsx")
+			with open(tabularqual_file[0], 'wb') as f:				
+				f.write(request.data['file'].read())
+
+			try:
+				bnd_file, cfg_file = tabularqual_to_maboss(tabularqual_file[1])
+			except Exception as e:
+				raise ValidationError("Error during conversion to MaBoSS : " + str(e))
+					
+			message = check_maboss_model(bnd_file, cfg_file)
+			
+			if len(message) > 0:
+				raise ValidationError("Conversion produced an invalid MaBoSS model : " + message[0])
+			
+			LogicalModel(
+				project=self.project,
+				name=request.data['name'],
+				bnd_file=File(open(bnd_file, 'rb'), name=os.path.basename(bnd_file)),
+				cfg_file=File(open(cfg_file, 'rb'), name=os.path.basename(cfg_file)),
+				format=LogicalModel.MABOSS			
+			).save()
+			
+			os.remove(tabularqual_file[1])
 			os.remove(bnd_file)
 			os.remove(cfg_file)
 			

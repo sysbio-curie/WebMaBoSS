@@ -14,7 +14,8 @@ class ModelForm extends React.Component {
 			'maboss': "MaBoSS",
 			'sbml': "SBML qual",
 			'zginml': "GINsim",
-			'bnet': "BNet"
+			'bnet': "BNet",
+			'tabularqual': "Tabular Qual"
 			
 		};
 
@@ -23,6 +24,7 @@ class ModelForm extends React.Component {
 			'bnet': ['BNet file'],
 			'maboss': ['BND file', 'CFG file'],
 			'sbml': ['SBML file'],
+			'tabularqual': ['Tabular Qual file']
 		};
 
 		this.dictExtensions = {
@@ -30,13 +32,15 @@ class ModelForm extends React.Component {
 			'maboss': ['.bnd', '.cfg'],
 			'sbml': ['.xml, .sbml'],
 			'bnet': ['.bnet'],
+			'tabularqual': ['.xlsx']
 		};
 
 		this.dictNbFiles = {
 			'zginml': 1,
 			'maboss': 2,
 			'sbml': 1,
-			'bnet': 1
+			'bnet': 1,
+			'tabularqual': 1
 		};
 
 		this.state = {
