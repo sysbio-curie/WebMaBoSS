@@ -45,7 +45,7 @@ class Home extends React.Component {
 					<Card>
 						<CardHeader>Public databases</CardHeader>
 						<CardBody>
-							<CardText>WebMaBoSS allows to browse models from CellCollective and BioModels, and import them.</CardText>
+							<CardText>WebMaBoSS allows to browse models from BioModels, Cell Collective and the GINsim model repository, and import them.</CardText>
 						</CardBody>
 					</Card>
 					

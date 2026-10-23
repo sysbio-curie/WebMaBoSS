@@ -21,6 +21,7 @@ from api.views.maboss.MaBoSSModel import (
 )
 from api.views.AuthView import TestAuthView, LogoutViewEx, UserEmailView
 from api.views.InstallStatus import InstallStatus
+from api.views.Versions import Versions
 from api.views.Monitoring import (
 	MonitoringAccess, MonitoringActivity, MonitoringStorage, MonitoringOptimize, MonitoringUsers, MonitoringCleanup
 )
@@ -114,4 +115,5 @@ urlpatterns = [
 	path('api/repositories/imports/<int:project_id>/<int:import_id>', RepositoryImportStatus.as_view()),
 
 	path('api/install_status', InstallStatus.as_view()),
+	path('api/versions', Versions.as_view()),
 ]

@@ -17,6 +17,14 @@ class GenericCalls {
 		);
 	}
 
+	// Versions of WebMaBoSS and of the tools it uses
+	static getVersions() {
+		return makeCancelable(
+			fetch("/api/versions", {method: "get", headers: getDefaultHeaders()})
+			.then(response => response.ok ? response.json() : Promise.reject(response))
+		);
+	}
+
 	static editById(endpoint, id) {
 		return makeCancelable(
 			fetch(endpoint + id, {
