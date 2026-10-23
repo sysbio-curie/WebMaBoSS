@@ -99,6 +99,14 @@ class MaBossResult extends React.Component {
 				lastStates: data[0]['last_states'], fixedPoints: data[1]['fixed_points'], 
 				nodesProbTraj: data[2]['nodes_probtraj'], statesProbTraj: data[3]['states_probtraj']
 			});
+		}, error => {
+			// Rather than loading forever
+			if (!error.isCanceled) {
+				this.setState({
+					lastStates: {}, fixedPoints: {}, nodesProbTraj: {}, statesProbTraj: {},
+					errors: ["Could not load the results of the simulation"]
+				});
+			}
 		});
 
 		// Apart, as it's only there when nodes were selected for it

@@ -196,7 +196,8 @@ class MaBoSSResultsFixedPoints(HasMaBoSSSimulation):
 			# print(fixed_points)
 			nodes = list(fixed_points.keys())[3:]
 			new_fps = []
-			for i in range(len(fixed_points['FP'])):
+			# Simulations which reach no fixed point (cycles) have an empty table
+			for i in range(len(fixed_points.get('FP', {}))):
 				new_fps.append({
 					"proba": fixed_points['Proba'][str(i)],
 					"nodes": {node:fixed_points[node][str(i)] for node in nodes}

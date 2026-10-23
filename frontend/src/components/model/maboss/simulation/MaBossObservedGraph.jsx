@@ -15,6 +15,13 @@ Cytoscape.use(dagre);
 
 const LAYOUTS = {0: "cose", 1: "circle", 2: "dagre", 3: "breadthfirst"};
 
+// The boxes of the states are as large as their names : the layouts must know it, or they overlap them
+const LAYOUT_OPTIONS = {
+	cose: {nodeDimensionsIncludeLabels: true, idealEdgeLength: 100, nodeRepulsion: 1000000, nodeOverlap: 40, numIter: 2000},
+	dagre: {nodeDimensionsIncludeLabels: true},
+	breadthfirst: {nodeDimensionsIncludeLabels: true},
+};
+
 // Colors of the transitions, from the least to the most probable (light to dark blue, as in pyMaBoSS)
 const LOW_COLOR = [198, 219, 239];
 const HIGH_COLOR = [8, 48, 107];
@@ -154,7 +161,7 @@ class MaBossObservedGraph extends React.Component {
 					// Drawn again, with a new layout, when the transitions shown change
 					key={[this.state.layout, this.state.cutoff, this.state.version, this.props.simulationId].join("|")}
 					elements={elements} stylesheet={stylesheet} style={this.style}
-					layout={{name: this.state.layout, animate: false, fit: true, padding: 30}}
+					layout={{name: this.state.layout, animate: false, fit: true, padding: 30, ...LAYOUT_OPTIONS[this.state.layout]}}
 					cy={(cy) => { this.cy = cy; }}
 				/> :
 				<div className="text-muted">No transition between the states of {graph.nodes.join(", ")} is that likely</div>

@@ -2,7 +2,7 @@ from django.conf import settings
 from rest_framework import status
 
 from api.tests.APITestCase import APITestCase
-from api.models import LogicalModel, Project
+from api.models import LogicalModel, Project, MaBoSSSimulation
 
 from json import loads, dumps
 from os.path import join, dirname, exists
@@ -171,6 +171,17 @@ class TestObservedGraph(APITestCase):
 
 		request = self.client.get("/api/maboss/%d/%d/observed_graph/" % (project.id, simulation_id))
 		self.assertIsNone(loads(request.content.decode())["observed_graph"])
+
+	def testWithoutFixedPoint(self):
+		# A simulation which reaches no fixed point (a cycle) : MaBoSS gives an empty table
+		self.login()
+		project, request = self.simulate([])
+		simulation_id = loads(request.content.decode())["simulation_id"]
+		MaBoSSSimulation.objects.filter(id=simulation_id).update(fixpoints="{}")
+
+		request = self.client.get("/api/maboss/%d/%d/fixed_points/" % (project.id, simulation_id))
+		self.assertEqual(request.status_code, status.HTTP_200_OK)
+		self.assertEqual(loads(request.content.decode())["fixed_points"], [])
 
 	def testObservedGraphLimits(self):
 
