@@ -2,7 +2,8 @@ name: Release
 
 on:
   release:
-    types: [created]
+    # Not "created", which is also sent when a draft is saved
+    types: [published]
 
 jobs:
 
@@ -14,6 +15,8 @@ jobs:
 
     env:
       TAG: ${{ github.event.release.tag_name }}
+      # A pre-release doesn't become the latest image
+      TAGS: ${{ github.event.release.prerelease && github.event.release.tag_name || format('{0} latest', github.event.release.tag_name) }}
 
     permissions:
       contents: read
@@ -62,7 +65,7 @@ jobs:
       run: |
         for image in sysbiocurie/webmaboss vnoel/webmaboss ghcr.io/${{ github.repository_owner }}/webmaboss; do
           image=$(echo $image | tr '[:upper:]' '[:lower:]')
-          for tag in $TAG latest; do
+          for tag in $TAGS; do
             docker tag webmaboss:$TAG $image:$tag
             docker push $image:$tag
           done
