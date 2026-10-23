@@ -16,7 +16,7 @@ Noël, V., Ruscone, M., Stoll, G., Viara, E., Zinovyev, A., Barillot, E., & Calz
 
 ### Use live version
 
-To use the version available at [https://webmaboss.vincent-noel.fr](https://webmaboss.vincent-noel.fr), you will need to create a user account. Once created, you can immediately login and start discovering the default project.
+To try the version available at [https://webmaboss.vincent-noel.fr](https://webmaboss.vincent-noel.fr) without an account, click on Demo : the demo models can be browsed and simulated, but not modified. To upload, edit and keep your own models, create a user account. Once created, you can immediately login and start discovering the default project, which contains copies of the demo models.
 
 For more information, consult the tutorials. 
 
