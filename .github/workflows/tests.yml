@@ -13,7 +13,7 @@ jobs:
     timeout-minutes: 90
 
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v7
 
     # The image is ~4.5GB, and the runner only has ~14GB of free disk
     - name: Free disk space
@@ -22,10 +22,10 @@ jobs:
         docker system prune -af
         df -h /
 
-    - uses: docker/setup-buildx-action@v3
+    - uses: docker/setup-buildx-action@v4
 
     - name: Build the image
-      uses: docker/build-push-action@v6
+      uses: docker/build-push-action@v7
       with:
         context: .
         file: docker/Dockerfile
@@ -42,7 +42,7 @@ jobs:
 
     - name: Upload snapshots, screenshots and logs
       if: always()
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v7
       with:
         name: tests-output
         path: tests-output
