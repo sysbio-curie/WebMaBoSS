@@ -8,7 +8,7 @@ WebMaBoSS is a web interface for the MaBoSS, the Markovian Boolean Stochastic Si
 WebMaBoSS allows you to store, modify, and simulate MaBoSS models. You can also import/export models in other compatible formats (SBML-qual, GINsim, BNet). Models can also be imported from public repositories (BioModels, Cell Collective, and the model repository of GINsim).
 
 WebMaBoSS is available as a docker container that can quickly be deployed locally. You will need [Docker](https://docs.docker.com/get-docker/), with its [Compose](https://docs.docker.com/compose/install/) plugin if you want to use it.
-A live version is deployed at [https://maboss.curie.fr/WebMaBoSS/](https://maboss.curie.fr/WebMaBoSS).
+A live version is deployed at [https://webmaboss.vincent-noel.fr](https://webmaboss.vincent-noel.fr).
 
 ### Reference
 
@@ -16,7 +16,7 @@ Noël, V., Ruscone, M., Stoll, G., Viara, E., Zinovyev, A., Barillot, E., & Calz
 
 ### Use live version
 
-To use the version available at [https://maboss.curie.fr/WebMaBoSS/](https://maboss.curie.fr/WebMaBoSS), you will need to create a user account. Once created, you can immediately login and start discovering the default project.
+To use the version available at [https://webmaboss.vincent-noel.fr](https://webmaboss.vincent-noel.fr), you will need to create a user account. Once created, you can immediately login and start discovering the default project.
 
 For more information, consult the tutorials. 
 
