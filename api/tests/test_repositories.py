@@ -1,5 +1,5 @@
 from django.conf import settings
-from django.core.cache import cache
+from django.core.cache import caches
 from rest_framework import status
 
 from api.tests.APITestCase import APITestCase
@@ -118,7 +118,7 @@ class TestRepositories(APITestCase):
 		APITestCase.setUp(self)
 		makedirs(join(settings.MEDIA_ROOT, "zS2NSxM9A4I0"), exist_ok=True)
 		create_guest_account()
-		cache.clear()
+		caches['shared'].clear()
 
 		self.fake = FakeRepositories()
 		for target, replacement in [

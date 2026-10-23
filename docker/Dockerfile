@@ -110,7 +110,7 @@ EXPOSE 8000
 ADD api /var/webmaboss/api
 ADD frontend /var/webmaboss/frontend
 ADD settings /var/webmaboss/settings
-ADD create_default_db.sh create_default_admin.sh install.sh runserver.sh wait_db.sh /var/webmaboss/
+ADD create_default_db.sh create_default_admin.sh install.sh maintenance.sh runserver.sh wait_db.sh /var/webmaboss/
 ADD .babelrc LICENSE.md manage.py package.json yarn.lock webpack.config.js /var/webmaboss/
 
 # Downloading node modules with the exact versions of yarn.lock, and building the javascript (production mode)
@@ -153,7 +153,9 @@ RUN rm -rf /var/lib/apt/lists/* \
 USER www-data
 
 # Running server
+# The maintenance (manage.py maintenance) runs in the background, every MAINTENANCE_EVERY seconds (0 : never)
 CMD /var/webmaboss/wait_db.sh; \
     /bin/bash /var/webmaboss/create_default_db.sh --settings=settings.prod_settings; \
+    /bin/bash /var/webmaboss/maintenance.sh & \
     /var/webmaboss/server/apachectl -D FOREGROUND
 

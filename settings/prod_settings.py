@@ -307,3 +307,15 @@ LOGGING = {
         'django.request': {'handlers': ['console'], 'level': 'ERROR'},
     },
 }
+
+# The default cache is in the memory of each process. The shared one is in files, seen by all the processes of the
+# server and by the maintenance job (manage.py maintenance), which keeps it up to date : lists of the repositories
+# of models, statistics of the users
+CACHES = {
+    'default': {'BACKEND': 'django.core.cache.backends.locmem.LocMemCache'},
+    'shared': {
+        'BACKEND': 'django.core.cache.backends.filebased.FileBasedCache',
+        'LOCATION': os.path.join(BASE_DIR, "data", "cache"),
+        'TIMEOUT': None,
+    },
+}

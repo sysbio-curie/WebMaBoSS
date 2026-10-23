@@ -48,8 +48,14 @@ class MonitoringCalls {
 		return postJSON("/api/monitoring/storage/optimize", {});
 	}
 
+	// The statistics as last computed : {users, computed_at, computing}
 	static getUsers() {
 		return getJSON("/api/monitoring/users");
+	}
+
+	// Computes them again, in the background
+	static computeUsers() {
+		return postJSON("/api/monitoring/users", {});
 	}
 
 	static getCleanupPreview(kind, days, inactiveOnly) {

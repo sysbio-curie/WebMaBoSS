@@ -11,8 +11,18 @@ function formatSize(bytes) {
 	return (unit === 0 ? value : value.toFixed(1)) + " " + units[unit];
 }
 
-function formatDate(isoDate) {
-	return isoDate === null ? "never" : isoDate.substring(0, 10);
+// With the time (in the browser's time zone) if asked
+function formatDate(isoDate, withTime = false) {
+	if (isoDate === null) {
+		return "never";
+	}
+	if (!withTime) {
+		return isoDate.substring(0, 10);
+	}
+	const date = new Date(isoDate);
+	const pad = value => String(value).padStart(2, "0");
+	return date.getFullYear() + "-" + pad(date.getMonth() + 1) + "-" + pad(date.getDate())
+		+ " " + pad(date.getHours()) + ":" + pad(date.getMinutes());
 }
 
 // YYYY-MM-DD of a date, days before today

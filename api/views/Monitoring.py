@@ -58,9 +58,19 @@ class MonitoringOptimize(AdminView):
 
 
 class MonitoringUsers(AdminView):
+	""" The statistics of the users, as last computed (by the maintenance job), and computing them again """
 
 	def get(self, request):
-		return Response(monitoring.users())
+		statistics = monitoring.users_statistics()
+		# Never computed yet
+		if statistics["users"] is None and not statistics["computing"]:
+			monitoring.compute_users_statistics_in_background()
+			statistics = monitoring.users_statistics()
+		return Response(statistics)
+
+	def post(self, request):
+		monitoring.compute_users_statistics_in_background()
+		return Response(monitoring.users_statistics())
 
 
 class MonitoringCleanup(AdminView):

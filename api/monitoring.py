@@ -12,6 +12,7 @@ from threading import Thread
 
 from django.conf import settings
 from django.contrib.auth.models import User
+from django.core.cache import caches
 from django.db import connection
 from django.db.models import Count, Max, Q, Sum, Value
 from django.db.models.functions import Coalesce, Length
@@ -35,6 +36,12 @@ DEMO_KEPT = timedelta(days=1)
 
 # Number of simulations or analyses deleted per request, so that a request never takes too long
 CLEANUP_BATCH = 50
+
+# The statistics of the users take a while on a large database (30s for 12GB) : they are computed by the maintenance
+# job, or in the background when asked, and kept in the shared cache
+USERS_KEY = "monitoring-users"
+USERS_COMPUTING_KEY = "monitoring-users-computing"
+USERS_COMPUTING_FOR = 15 * 60
 
 
 def folder_size(path):
@@ -186,6 +193,44 @@ def users():
 		}
 		for user in registered_users().annotate(last_activity=Max("activity__day")).order_by("id")
 	]
+
+
+def compute_users_statistics():
+	statistics = {"users": users(), "computed_at": timezone.now().isoformat()}
+	caches["shared"].set(USERS_KEY, statistics, None)
+	return statistics
+
+
+def users_statistics():
+	""" The last statistics of the users, when they were computed, and whether they are being computed again """
+	statistics = caches["shared"].get(USERS_KEY) or {"users": None, "computed_at": None}
+	return dict(statistics, computing=caches["shared"].get(USERS_COMPUTING_KEY) is not None)
+
+
+def compute_users_statistics_in_background():
+	""" Starts computing them again, unless it's already being done """
+	if not caches["shared"].add(USERS_COMPUTING_KEY, True, USERS_COMPUTING_FOR):
+		return
+
+	def compute():
+		try:
+			compute_users_statistics()
+		finally:
+			caches["shared"].delete(USERS_COMPUTING_KEY)
+			# The thread's own connection to the database (not the one of a test, run in the same thread)
+			if not connection.in_atomic_block:
+				connection.close()
+
+	Thread(target=compute, args=()).start()
+
+
+def interrupt_stalled():
+	""" Marks as interrupted the simulations and analyses still queued or running after STALLED_AFTER """
+	before = timezone.now() - STALLED_AFTER
+	return sum(
+		model.objects.filter(status__in=(model.QUEUED, model.BUSY), created_at__lt=before).update(status=model.INTERRUPTED)
+		for model in (MaBoSSSimulation, MaBoSSSensitivityAnalysis, MaBoSSSensitivitySimulation)
+	)
 
 
 def optimize_tables():

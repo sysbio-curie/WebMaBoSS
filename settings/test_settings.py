@@ -11,3 +11,8 @@ FIXTURE_DIRS = (
     os.path.join(BASE_DIR, 'api/tests/fixtures'),
 )
 
+
+CACHES = {
+    'default': {'BACKEND': 'django.core.cache.backends.locmem.LocMemCache'},
+    'shared': {'BACKEND': 'django.core.cache.backends.locmem.LocMemCache', 'LOCATION': 'shared', 'TIMEOUT': None},
+}

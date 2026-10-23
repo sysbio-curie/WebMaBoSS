@@ -5,18 +5,26 @@ from os.path import isdir, join
 from django.conf import settings
 
 from django.contrib.auth.models import User
-from django.core.cache import cache
+from django.core.cache import cache, caches
+from django.core.management import call_command
 from django.core.files.base import ContentFile
 from django.utils import timezone
 from rest_framework import status
 
 from api.models import (
-	Project, LogicalModel, MaBoSSSimulation, MaBoSSSensitivityAnalysis, MaBoSSSensitivitySimulation, UserActivity
+	Project, LogicalModel, MaBoSSSimulation, MaBoSSSensitivityAnalysis, MaBoSSSensitivitySimulation, UserActivity,
+	ModelImport
 )
 from api.models.activity import estimate_past_activity
 from api.models.common import create_guest_account
 from api.models.maboss import simulation_folder, sensitivityanalysis_folder
 from api.tests.APITestCase import APITestCase
+from api.tests.test_simulate import SynchronousThread
+from api.tests.test_repositories import FakeRepositories
+
+from io import StringIO
+import requests
+from unittest.mock import patch
 
 
 class TestMonitoring(APITestCase):
@@ -26,6 +34,11 @@ class TestMonitoring(APITestCase):
 	def setUp(self):
 		APITestCase.setUp(self)
 		cache.clear()
+		caches["shared"].clear()
+		# The statistics of the users are computed in a thread, which wouldn't see the test's database
+		patcher = patch("api.monitoring.Thread", SynchronousThread)
+		patcher.start()
+		self.addCleanup(patcher.stop)
 		self.admin = User.objects.get(username="admin")
 		self.user = User.objects.create_user("user", "user@example.org", "user_password")
 
@@ -175,9 +188,13 @@ class TestMonitoring(APITestCase):
 		self.assertGreater(storage["disk"]["size"], 0)
 		self.assertIn("api_mabosssimulation", [table["name"] for table in storage["database"]["tables"]])
 
+		# Computed on the first request, then kept
 		request = self.client.get('/api/monitoring/users')
 		self.assertEqual(request.status_code, status.HTTP_200_OK)
-		users = {user["username"]: user for user in loads(request.content)}
+		statistics = loads(request.content)
+		self.assertFalse(statistics["computing"])
+		self.assertIsNotNone(statistics["computed_at"])
+		users = {user["username"]: user for user in statistics["users"]}
 		self.assertEqual(sorted(users), ["admin", "user"])  # Without the account of anonymous users
 		self.assertEqual(users["user"]["last_activity"], "2026-03-04")
 		self.assertEqual(users["admin"]["last_activity"], None)
@@ -287,3 +304,69 @@ class TestMonitoring(APITestCase):
 		self.as_admin()
 		for parameters in [{}, {"kind": "everything"}, {"kind": "old"}, {"kind": "old", "days": "0"}, {"kind": "accounts", "days": "many"}]:
 			self.assertEqual(self.client.post('/api/monitoring/cleanup', parameters).status_code, status.HTTP_400_BAD_REQUEST)
+
+
+class TestMaintenance(APITestCase):
+	""" manage.py maintenance """
+
+	fixtures = TestMonitoring.fixtures
+	setUp = TestMonitoring.setUp
+	simulation = TestMonitoring.simulation
+
+	def maintenance(self, *tasks):
+		output = StringIO()
+		call_command("maintenance", *(["--only"] + list(tasks) if tasks else []), stdout=output, stderr=output)
+		return output.getvalue()
+
+	def testDemoAndStalled(self):
+		guest = create_guest_account()
+		old_demo = self.simulation(guest, days_ago=2)
+		new_demo = self.simulation(guest, days_ago=0)
+		stalled = self.simulation(self.user, days_ago=2, status=MaBoSSSimulation.BUSY)
+		running = self.simulation(self.user, days_ago=0, status=MaBoSSSimulation.BUSY)
+
+		output = self.maintenance("demo", "stalled")
+		self.assertIn("1 demo simulations and analyses deleted", output)
+		self.assertEqual(
+			sorted(MaBoSSSimulation.objects.values_list("id", flat=True)), sorted([new_demo.id, stalled.id, running.id])
+		)
+		self.assertEqual(MaBoSSSimulation.objects.get(id=stalled.id).status, MaBoSSSimulation.INTERRUPTED)
+		self.assertEqual(MaBoSSSimulation.objects.get(id=running.id).status, MaBoSSSimulation.BUSY)
+
+	def testImports(self):
+		project = Project.objects.filter(user=self.user).first()
+		stalled = ModelImport.objects.create(project=project, repository="ginsim", remote_id="a", name="a")
+		running = ModelImport.objects.create(project=project, repository="ginsim", remote_id="b", name="b")
+		old = ModelImport.objects.create(project=project, repository="ginsim", remote_id="c", name="c", status=ModelImport.ENDED)
+		ModelImport.objects.filter(id=stalled.id).update(created_at=timezone.now() - timedelta(hours=2))
+		ModelImport.objects.filter(id=old.id).update(updated_at=timezone.now() - timedelta(days=8))
+
+		self.maintenance("imports")
+		self.assertEqual(ModelImport.objects.get(id=stalled.id).status, ModelImport.ERROR)
+		self.assertEqual(ModelImport.objects.get(id=running.id).status, ModelImport.BUSY)
+		self.assertFalse(ModelImport.objects.filter(id=old.id).exists())
+
+	def testStatisticsAndRepositories(self):
+		self.simulation(self.user)
+		with patch("api.repositories.requests.get", FakeRepositories().get):
+			output = self.maintenance("users", "repositories", "sessions")
+		self.assertIn("statistics of 2 users computed", output)
+		self.assertIn("models listed : BioModels 1, Cell Collective 1, GINsim 3", output)
+
+		# Shown without being computed again
+		self.client.force_authenticate(user=self.admin)
+		with patch("api.monitoring.users", side_effect=AssertionError("computed again")):
+			statistics = loads(self.client.get('/api/monitoring/users').content)
+		self.assertEqual(sorted(user["username"] for user in statistics["users"]), ["admin", "user"])
+
+		# The repositories are listed from the cache
+		with patch("api.repositories.requests.get", side_effect=AssertionError("listed again")):
+			self.assertEqual(len(loads(self.client.get('/api/repositories/ginsim/').content)), 3)
+
+	def testUnreachableRepository(self):
+		def unreachable(url, **kwargs):
+			raise requests.ConnectionError("unreachable")
+		with patch("api.repositories.requests.get", unreachable):
+			output = self.maintenance("repositories")
+		# The other tasks would still run, and the command doesn't fail for it
+		self.assertIn("BioModels unreachable (unreachable)", output)

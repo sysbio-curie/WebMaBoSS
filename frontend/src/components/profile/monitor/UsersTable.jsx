@@ -1,7 +1,7 @@
 import React from "react";
-import {Card, CardHeader, CardBody, Input, Table} from "reactstrap";
+import {Button, Card, CardHeader, CardBody, Input, Table} from "reactstrap";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
-import {faChevronDown, faChevronUp} from "@fortawesome/free-solid-svg-icons";
+import {faChevronDown, faChevronUp, faSyncAlt} from "@fortawesome/free-solid-svg-icons";
 
 import APICalls from "../../api/apiCalls";
 import LoadingIcon from "../../commons/loaders/LoadingIcon";
@@ -32,6 +32,8 @@ class UsersTable extends React.Component {
 
 		this.state = {
 			users: null,
+			computedAt: null,
+			computing: false,
 			error: null,
 			sortBy: "total",
 			ascending: false,
@@ -39,15 +41,24 @@ class UsersTable extends React.Component {
 		};
 
 		this.getUsersCall = null;
+		this.checker = null;
 	}
 
-	getUsers() {
-		if (this.getUsersCall !== null) { this.getUsersCall.cancel(); }
-		this.setState({users: null, error: null});
+	// The statistics are computed in the background (by the maintenance job, or when asked) : checked until they're done
+	received(statistics) {
+		this.setState({users: statistics.users, computedAt: statistics.computed_at, computing: statistics.computing, error: null});
+		clearTimeout(this.checker);
+		if (statistics.computing) {
+			this.checker = setTimeout(() => this.getUsers(), 3000);
+		}
+	}
 
-		this.getUsersCall = APICalls.MonitoringCalls.getUsers();
+	getUsers(compute = false) {
+		if (this.getUsersCall !== null) { this.getUsersCall.cancel(); }
+
+		this.getUsersCall = compute ? APICalls.MonitoringCalls.computeUsers() : APICalls.MonitoringCalls.getUsers();
 		this.getUsersCall.promise.then(
-			users => this.setState({users: users}),
+			statistics => this.received(statistics),
 			error => { if (!error.isCanceled) { this.setState({error: "Could not load the users"}); } }
 		);
 	}
@@ -68,11 +79,12 @@ class UsersTable extends React.Component {
 	componentDidUpdate(prevProps) {
 		// After a cleanup
 		if (prevProps.version !== this.props.version) {
-			this.getUsers();
+			this.getUsers(true);
 		}
 	}
 
 	componentWillUnmount() {
+		clearTimeout(this.checker);
 		if (this.getUsersCall !== null) { this.getUsersCall.cancel(); }
 	}
 
@@ -124,13 +136,24 @@ class UsersTable extends React.Component {
 		if (this.state.error !== null) {
 			content = <div className="alert alert-danger">{this.state.error}</div>;
 		} else if (this.state.users === null) {
-			content = <LoadingIcon width="3rem"/>;
+			content = <React.Fragment>
+				<LoadingIcon width="3rem"/>
+				{this.state.computing ? <small className="text-muted">Computing the statistics, which takes a while on a large database</small> : null}
+			</React.Fragment>;
 		} else {
 			content = this.renderTable();
 		}
 
 		return <Card className="mb-4">
-			<CardHeader>Users</CardHeader>
+			<CardHeader className="d-flex align-items-center">
+				<span className="mr-auto">Users</span>
+				<small className="text-muted mr-2">
+					{this.state.computing ? "Computing..." : (this.state.computedAt ? "Computed " + formatDate(this.state.computedAt, true) : null)}
+				</small>
+				<Button size="sm" title="Compute again" disabled={this.state.computing} onClick={() => this.getUsers(true)}>
+					<FontAwesomeIcon icon={faSyncAlt} spin={this.state.computing}/>
+				</Button>
+			</CardHeader>
 			<CardBody>{content}</CardBody>
 		</Card>;
 	}

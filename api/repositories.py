@@ -1,6 +1,7 @@
 """
 Public repositories of logical models, from which models can be imported in a project : BioModels, Cell Collective
-and the model repository of GINsim. Their lists are kept for a while, as they rarely change and are long to get.
+and the model repository of GINsim. Their lists are kept for a while in the shared cache, as they rarely change and
+are long to get, and the maintenance job (manage.py maintenance) gets them again regularly.
 Only the models of these lists can be downloaded : the server never fetches an address given by a user.
 """
 
@@ -10,12 +11,14 @@ from os.path import join
 from urllib.parse import quote
 
 import requests
-from django.core.cache import cache
+from django.core.cache import caches
 
 # Cell Collective takes up to a minute and a half to export a large model
 DOWNLOAD_TIMEOUT = 180
 LIST_TIMEOUT = 30
 LIST_CACHED_FOR = 6 * 3600
+# Got again by the maintenance job every hour, and kept longer : a repository unreachable for a while is still listed
+LIST_KEPT_BY_MAINTENANCE = 2 * 24 * 3600
 MAX_DOWNLOAD_SIZE = 50 * 1024 * 1024
 
 
@@ -53,13 +56,18 @@ class Repository:
 
 	def models(self):
 		""" The models of the repository : dicts with at least id, name and author """
-		models = cache.get("repository-" + self.key)
+		models = caches["shared"].get("repository-" + self.key)
 		if models is None:
-			try:
-				models = self.list_models()
-			except (KeyError, TypeError, AttributeError, IndexError) as e:
-				raise RepositoryError("unexpected answer (%s)" % e)
-			cache.set("repository-" + self.key, models, LIST_CACHED_FOR)
+			models = self.refresh()
+		return models
+
+	def refresh(self, kept=LIST_CACHED_FOR):
+		""" Gets the list of the models again, and keeps it in the shared cache """
+		try:
+			models = self.list_models()
+		except (KeyError, TypeError, AttributeError, IndexError) as e:
+			raise RepositoryError("unexpected answer (%s)" % e)
+		caches["shared"].set("repository-" + self.key, models, kept)
 		return models
 
 	def find(self, model_id):
