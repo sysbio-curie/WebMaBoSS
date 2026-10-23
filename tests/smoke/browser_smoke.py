@@ -32,7 +32,7 @@ from playwright.sync_api import sync_playwright, Error as PlaywrightError
 # Default model, in the MaBoSS format of most stored models, with initial states like "Metastasis.istate = FALSE;"
 MODEL = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..", "api", "defaults", "models", "metastasis", "metastasis")
 
-ANONYMOUS_PAGES = ["/", "/about/", "/tutorials/", "/tutorials/cohen/", "/tutorials/corral/", "/models/", "/login/", "/register/"]
+ANONYMOUS_PAGES = ["/", "/about/", "/tutorials/", "/tutorials/cohen/", "/tutorials/corral/", "/tutorials/sizek/", "/models/", "/login/", "/register/"]
 USER_PAGES = ["/", "/models/", "/model/overview/", "/model/maboss/editing/", "/model/maboss/simulation/",
 			  "/model/maboss/sensitivity/", "/model/fixed_points/", "/profile/account/", "/profile/maboss/", "/data/"]
 

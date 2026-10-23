@@ -33,7 +33,7 @@
   "buttons": [],
   "counts": {
    "charts": 0,
-   "images": 2,
+   "images": 4,
    "inputs": 0,
    "modals": 0,
    "percentages": 0,
@@ -42,6 +42,7 @@
   "failed_requests": [],
   "headings": [
    "About",
+   "Version",
    "Publications",
    "Funding"
   ],
@@ -155,7 +156,7 @@
   "buttons": [],
   "counts": {
    "charts": 0,
-   "images": 2,
+   "images": 3,
    "inputs": 0,
    "modals": 0,
    "percentages": 0,
@@ -245,6 +246,39 @@
   ],
   "title": "WebMaBoSS",
   "url": "/tutorials/corral/"
+ },
+ "anonymous /tutorials/sizek/": {
+  "buttons": [],
+  "counts": {
+   "charts": 0,
+   "images": 9,
+   "inputs": 0,
+   "modals": 0,
+   "percentages": 9,
+   "tables": 0
+  },
+  "failed_requests": [],
+  "headings": [
+   "Sizek's Tutorial : observed graphs",
+   "1. Loading the model",
+   "2. Order of the activation of the cyclins",
+   "3. When does apoptosis start along the cell cycle ?",
+   "4. Ectopic p110_H activity blocks apoptosis",
+   "References"
+  ],
+  "js_errors": [],
+  "labels": [],
+  "nan": 0,
+  "navigation": [
+   "WebMaBoSS",
+   "Tutorials",
+   "About",
+   "Demo",
+   "Sign in",
+   "Register"
+  ],
+  "title": "WebMaBoSS",
+  "url": "/tutorials/sizek/"
  },
  "login": {
   "api_key_set": true,

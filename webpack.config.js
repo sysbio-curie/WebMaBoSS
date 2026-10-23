@@ -42,6 +42,16 @@ module.exports = (env, argv) => ({
 				'../images', path.relative('frontend/src/images', path.dirname(pathData.filename)), '[name][ext]'
 			),
 		},
+	  }, {
+		// Model files to download in the tutorials, in frontend/static/tutorials
+		test: /\.(bnd|cfg)$/i,
+		include: path.resolve(__dirname, 'frontend/src/tutorials'),
+		type: 'asset/resource',
+		generator: {
+			filename: (pathData) => path.posix.join(
+				'../tutorials', path.relative('frontend/src/tutorials', path.dirname(pathData.filename)), '[name][ext]'
+			),
+		},
 	  }
 	]
   },

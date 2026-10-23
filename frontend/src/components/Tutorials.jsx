@@ -3,6 +3,7 @@ import { Card, CardBody, CardHeader, CardText, Col, Row } from "reactstrap";
 import FullPage from "./FullPage";
 import image_cohen from '../images/tutorials/cohen/image17.png';
 import image_corral from '../images/tutorials/corral/image22.png';
+import image_sizek from '../images/tutorials/sizek/cyclins_observed_graph.png';
 class Tutorials extends React.Component {
 
 	render(){
@@ -26,6 +27,15 @@ class Tutorials extends React.Component {
 							<CardBody>
 								<div className="container-fluid"><img src={image_corral} width="250"/></div>
 								<CardText>Studying TH cells differentiation with a model from Corral et al.</CardText>
+							</CardBody>
+						</Card></a>
+					</Col>
+					<Col className={"col-sm-4"}>
+						<a href="/tutorials/sizek/"><Card>
+							<CardHeader>Sizek model</CardHeader>
+							<CardBody>
+								<div className="container-fluid"><img src={image_sizek} width="250"/></div>
+								<CardText>Following the cell cycle and the entry into apoptosis with observed graphs, with a model from Sizek et al.</CardText>
 							</CardBody>
 						</Card></a>
 					</Col>

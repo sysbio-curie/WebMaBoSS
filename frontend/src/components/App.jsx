@@ -28,6 +28,7 @@ import Monitor from "./profile/monitor/Monitor";
 import {SensitivityWrapper} from "./model/maboss/sensitivity/SensitivityWrapper";
 import CohenTutorial from './CohenTutorial';
 import CorralTutorial from './CorralTutorial';
+import SizekTutorial from './SizekTutorial';
 
 class App extends Component {
 
@@ -46,6 +47,7 @@ class App extends Component {
 					<Route exact path="/tutorials/" component={Tutorials} />
 					<Route exact path="/tutorials/cohen/" component={CohenTutorial} />
 					<Route exact path="/tutorials/corral/" component={CorralTutorial} />
+					<Route exact path="/tutorials/sizek/" component={SizekTutorial} />
 					<Route exact path="/about/" component={About} />
 
 					<Route exact path="/model/overview/" component={OverviewWrapper} />
