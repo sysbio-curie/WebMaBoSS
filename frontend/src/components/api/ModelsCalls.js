@@ -15,18 +15,14 @@ class ModelsCalls {
 		);
 	}
 
-	static importModel(project_id, file, name, file2, url, use_sbml_names) {
+	static importModel(project_id, file, name, file2, use_sbml_names) {
 
 		const formData = new FormData();
 		formData.append('name', name);
 		formData.append('use_sbml_names', use_sbml_names);
-		if (url !== undefined) {
-			formData.append('url', url);		
-		} else {
-			formData.append('file', file);
-			if (file2 !== undefined && file2 !== null) {
-				formData.append('file2', file2);
-			}
+		formData.append('file', file);
+		if (file2 !== undefined && file2 !== null) {
+			formData.append('file2', file2);
 		}
 		
 		return makeCancelable(

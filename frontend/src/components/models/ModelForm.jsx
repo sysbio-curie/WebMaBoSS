@@ -91,7 +91,7 @@ class ModelForm extends React.Component {
 		if (this.state.id !== null) {
 			this.importModelCall = APICalls.ModelCalls.setName(this.props.project, this.state.id, this.state.name);
 		} else {
-			this.importModelCall = APICalls.ModelsCalls.importModel(this.props.project, this.state.file, this.state.name, this.state.file2, undefined, this.state.useSBMLNames);
+			this.importModelCall = APICalls.ModelsCalls.importModel(this.props.project, this.state.file, this.state.name, this.state.file2, this.state.useSBMLNames);
 		}
 		
 		this.importModelCall.promise.then(response => {

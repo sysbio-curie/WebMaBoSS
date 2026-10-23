@@ -1,9 +1,15 @@
 import React from "react";
 import {Button, ButtonToolbar, Modal, ModalHeader, ModalBody, ModalFooter, Nav, NavItem, NavLink, TabContent, TabPane } from "reactstrap";
-import ImportModelFromCC from "./ImportModelFromCC";
 import classnames from 'classnames';
-import ImportModelsFromBiomodels from "./ImportModelFromBioModels";
+import ImportModelFromRepository from "./ImportModelFromRepository";
 import Switch from "../commons/buttons/Switch";
+
+// Tab, name, and a warning when importing takes long
+const REPOSITORIES = [
+	["biomodels", "BioModels", null],
+	["cellcollective", "Cell Collective", "Cell Collective can take more than a minute to export a model"],
+	["ginsim", "GINsim", null],
+];
 
 class ImportModel extends React.Component {
 
@@ -54,17 +60,6 @@ class ImportModel extends React.Component {
 	componentWillUnmount() {
 	}
 
-	// loadModel(model_id, model_name) {
-	// 	this.setState({importing: true})
-	// 	let url = APICalls.CellCollective.getSBMLURLFromCC(model_id);
-	// 	this.loadModelCall = APICalls.ModelsCalls.importModel(this.props.project, null, model_name, null, url);
-	// 	this.loadModelCall.promise.then(() => { 
-	// 		this.setState({importing: false});
-	// 		this.props.hide();
-	// 		this.props.updateParent();
-	// 	});
-	// }
-
 	render() {
 		return <React.Fragment>
 			<Modal style={{minWidth: '800px'}}
@@ -80,40 +75,33 @@ class ImportModel extends React.Component {
 				}}>Import model</ModalHeader>
 				<ModalBody>
 					<Nav tabs>
-						<NavItem>
-							<NavLink
-								className={classnames({ active: this.state.activeTab === 'biomodels' })}
-								onClick={() => { this.toggleTab('biomodels'); }}
-							>BioModels</NavLink>
-						</NavItem>
-						<NavItem>
-							<NavLink
-								className={classnames({ active: this.state.activeTab === 'cellcollective' })}
-								onClick={() => { this.toggleTab('cellcollective'); }}
-							>CellCollective</NavLink>
-						</NavItem>
-						
+						{REPOSITORIES.map(([key, name]) =>
+							<NavItem key={key}>
+								<NavLink
+									className={classnames({ active: this.state.activeTab === key })}
+									onClick={() => { this.toggleTab(key); }}
+								>{name}</NavLink>
+							</NavItem>
+						)}
 					</Nav>
 					<TabContent activeTab={this.state.activeTab}>
 						<br/>
-						<TabPane tabId="biomodels" style={{overflowY: "auto", height: '400px', width: '760px', textOverflow: 'ellipsis' }}>
-							<ImportModelsFromBiomodels
-								project={this.props.project}
-								updateParent={this.props.updateParent}
-								hide={this.props.hide}
-								showErrors={this.props.showErrors}
-								useSBMLNames={this.state.useSBMLNames}
-							/>
-						</TabPane>
-						{/*<TabPane tabId="cellcollective" style={{overflowY: "auto", height: '400px', width: '760px', textOverflow: 'ellipsis' }}>
-							<ImportModelFromCC
-								project={this.props.project}
-								updateParent={this.props.updateParent}
-								hide={this.props.hide}
-								showErrors={this.props.showErrors}
-								useSBMLNames={this.state.useSBMLNames}
-							/>
-						</TabPane>*/}
+						{REPOSITORIES.map(([key, name, slow]) =>
+							<TabPane key={key} tabId={key} style={{overflowY: "auto", height: '400px', width: '760px', textOverflow: 'ellipsis' }}>
+								{/* Only the list shown is loaded */}
+								{ this.state.activeTab === key ?
+									<ImportModelFromRepository
+										repository={key}
+										slow={slow}
+										project={this.props.project}
+										updateParent={this.props.updateParent}
+										hide={this.props.hide}
+										showErrors={this.props.showErrors}
+										useSBMLNames={this.state.useSBMLNames}
+									/> : null
+								}
+							</TabPane>
+						)}
 					</TabContent>
 				
 				</ModalBody>

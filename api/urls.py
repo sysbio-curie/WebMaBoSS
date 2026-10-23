@@ -25,8 +25,7 @@ from api.views.Monitoring import (
 	MonitoringAccess, MonitoringActivity, MonitoringStorage, MonitoringOptimize, MonitoringUsers, MonitoringCleanup
 )
 
-from api.views.CCApi import CCApi
-from api.views.BioModelsAPI import BioModelsAPI
+from api.views.Repositories import RepositoryModels, RepositoryImport, RepositoryImportStatus
 from dj_rest_auth.views import LoginView, PasswordChangeView
 from dj_rest_auth.registration.views import RegisterView, VerifyEmailView
 
@@ -110,8 +109,9 @@ urlpatterns = [
 	path('api/maboss/servers/<int:server_id>', MaBoSSServerView.as_view()),
 	path('api/maboss/check_server/<int:server_id>', CheckServerView.as_view()),
 
-	path('api/ccapi/all', CCApi.as_view()),
-	path('api/biomodels/all', BioModelsAPI.as_view()),
+	path('api/repositories/<str:repository>/', RepositoryModels.as_view()),
+	path('api/repositories/<str:repository>/<int:project_id>/import', RepositoryImport.as_view()),
+	path('api/repositories/imports/<int:project_id>/<int:import_id>', RepositoryImportStatus.as_view()),
 
 	path('api/install_status', InstallStatus.as_view()),
 ]
