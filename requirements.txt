@@ -4,7 +4,8 @@ django-allauth==65.19.7
 dj-rest-auth[with_social]==7.2.0
 djangorestframework==3.17.2
 ginsim
-maboss==0.8.16
+# pyMaBoSS develop, for the observed graph : 0.8.16 can't read the in_graph declarations of the cfg files
+maboss @ https://github.com/vincent-noel/pyMaBoSS/archive/e1ff76641e4f106ef532626ded299bfaf818d933.tar.gz
 mysqlclient==2.3.0
 PyYAML
 scikit-learn

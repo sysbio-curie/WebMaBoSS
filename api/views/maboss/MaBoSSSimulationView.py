@@ -26,6 +26,29 @@ from api.views.commons.parse import parseIstates,dumpIstates
 from time import time
 from collections import OrderedDict
 
+# The observed graph has a state per combination of its nodes : 2^n of them, and up to 4^n transitions
+MAX_OBSERVED_NODES = 8
+
+
+def in_observed_graph(node):
+	""" Whether a node of a MaBoSS model is in the observed graph (as read in a cfg, it can be a string) """
+	return str(node.in_graph).lower() not in ["false", "0", "0.0"]
+
+
+def sparse_observed_graph(table, nodes):
+	""" The observed graph (probabilities of the transitions, from the rows to the columns), without the zeros """
+	edges = [
+		[source, target, round(float(proba), 6)]
+		for source, row in table.iterrows() for target, proba in row.items() if proba > 0
+	]
+	visited = set(state for edge in edges for state in edge[:2])
+	return {
+		'nodes': nodes,
+		'states': [state for state in table.index if state in visited],
+		'edges': edges
+	}
+
+
 class MaBoSSSimulationView(HasModel):
 
 	# Anonymous users can run simulations on the demo models
@@ -41,7 +64,23 @@ class MaBoSSSimulationView(HasModel):
 	def post(self, request, project_id, model_id):
 		
 		HasModel.load(self, request, project_id, model_id)
-		
+
+		# Without it, the observed graph is the one of the model
+		observed_nodes = None
+		if 'observedGraphNodes' in request.POST:
+			observed_nodes = [key for key, value in loads(request.POST['observedGraphNodes']).items() if value]
+
+			if len(observed_nodes) > MAX_OBSERVED_NODES:
+				return Response(
+					{'error': "You can only select up to %d nodes for the observed graph" % MAX_OBSERVED_NODES},
+					status=status.HTTP_400_BAD_REQUEST
+				)
+			if len(observed_nodes) > 0 and request.POST.get('serverHost') is not None:
+				return Response(
+					{'error': "The observed graph is only available for the simulations run locally"},
+					status=status.HTTP_400_BAD_REQUEST
+				)
+
 		if self.model.format == LogicalModel.ZGINML:
 			path = join(settings.MEDIA_ROOT, self.model.file.path)
 			ginsim_model = ginsim.load(path)
@@ -131,6 +170,9 @@ class MaBoSSSimulationView(HasModel):
 			[key for key, value in loads(request.POST['outputVariables']).items() if value]
 		)
 
+		if observed_nodes is not None:
+			maboss_model.network.set_observed_graph_nodes(observed_nodes)
+
 		for var, istate in parseIstates(request.POST['initialStates']).items():
 			maboss_model.network.set_istate(var, istate)
 
@@ -179,12 +221,22 @@ def run_simulation(maboss_model, maboss_simulation_id, server_host, server_port)
 		nodes_probtraj_json = nodes_probtraj.to_json()
 		# t4 = time()
 		# print("Loaded nodes probtraj : %.2gs" % (t4-t3))
+
+		observed_graph_json = None
+		observed_nodes = [name for name, node in maboss_model.network.items() if in_observed_graph(node)]
+		if len(observed_nodes) > 0 and server_host is None:
+			# The simulation is still useful without it
+			try:
+				observed_graph_json = dumps(sparse_observed_graph(res.get_observed_graph(), observed_nodes))
+			except Exception as e:
+				observed_graph_json = dumps({'error': "Could not read the observed graph : " + str(e)})
 		
 		with transaction.atomic():
 			maboss_simulation = MaBoSSSimulation.objects.get(id=maboss_simulation_id)
 			maboss_simulation.fixpoints = fixed_points_json
 			maboss_simulation.states_probtraj = states_probtraj_json
 			maboss_simulation.nodes_probtraj = nodes_probtraj_json
+			maboss_simulation.observed_graph = observed_graph_json
 
 			maboss_simulation.status = MaBoSSSimulation.ENDED
 			maboss_simulation.save()
@@ -219,6 +271,7 @@ class MaBossSettings(HasModel):
 		maboss_model = self.getMaBoSSModel()
 
 		output_variables = {var: not value.is_internal for var, value in maboss_model.network.items()}
+		observed_graph_nodes = {var: in_observed_graph(value) for var, value in maboss_model.network.items()}
 		initial_states = maboss_model.network.get_istate()
 		mutations = maboss_model.get_mutations()
 		settings = {key: value for key, value in maboss_model.param.items() if not key.startswith("$")}
@@ -231,6 +284,7 @@ class MaBossSettings(HasModel):
 
 		return Response({
 			'output_variables': OrderedDict(sorted(output_variables.items())),
+			'observed_graph_nodes': OrderedDict(sorted(observed_graph_nodes.items())),
 			'initial_states': dumpIstates(initial_states),
 			'mutations': OrderedDict(sorted(mutations)),
 			'settings': settings

@@ -17,6 +17,10 @@ import LoadingInlineIcon from "../../../commons/loaders/LoadingInlineIcon";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {faCheck, faFilter, faTimes} from "@fortawesome/free-solid-svg-icons";
 import MyDropdown from "../../../commons/buttons/MyDropdown";
+
+// The observed graph has a state per combination of its nodes
+const MAX_OBSERVED_NODES = 8;
+
 class NewSimForm extends React.Component {
 
 	constructor(props) {
@@ -42,6 +46,7 @@ class NewSimForm extends React.Component {
 			allInitialStates: 0,
 			outputVariables: {},
 			allOutputVariables: false,
+			observedGraphNodes: {},
 			mutatedVariables: {},
 
 			listServers: [],
@@ -66,6 +71,7 @@ class NewSimForm extends React.Component {
 		this.toggleAllInitialStates = this.toggleAllInitialStates.bind(this);
 		this.updateOutputVariables = this.updateOutputVariables.bind(this);
 		this.toggleAllOutputVariables = this.toggleAllOutputVariables.bind(this);
+		this.updateObservedGraphNodes = this.updateObservedGraphNodes.bind(this);
 		this.updateMutatedVariables = this.updateMutatedVariables.bind(this);
 
 		this.getServerStatus = this.getServerStatus.bind(this);
@@ -136,6 +142,7 @@ class NewSimForm extends React.Component {
 				listNodes: [],
 				initialStates: {},
 				outputVariables: {},
+				observedGraphNodes: {},
 			});
 
 			this.getSettingsCall = APICalls.MaBoSSCalls.getMaBoSSSimulationSettings(project_id, model_id)
@@ -176,6 +183,7 @@ class NewSimForm extends React.Component {
 				this.setState(
 					{
 						outputVariables: output_variables,
+						observedGraphNodes: {...response['observed_graph_nodes']},
 						initialStates: initial_states,
 						rawInitialStates: response['initial_states'],
 						listNodes: Object.keys(response['initial_states']),
@@ -221,6 +229,12 @@ class NewSimForm extends React.Component {
 			}, {}
 		);
 		this.setState({allOutputVariables: !this.state.allOutputVariables, outputVariables: outputs});
+	}
+
+	updateObservedGraphNodes(node) {
+		this.setState(prevState => ({
+			observedGraphNodes: {...prevState.observedGraphNodes, [node]: !prevState.observedGraphNodes[node]}
+		}));
 	}
 
 	updateMutatedVariables(node, value) {
@@ -314,6 +328,14 @@ class NewSimForm extends React.Component {
 		if (count_outputs > 15) {
 			errors.push("You can only select up to 15 output nodes");
 		}
+
+		const count_observed = Object.values(this.state.observedGraphNodes).filter(x => x).length;
+		if (count_observed > MAX_OBSERVED_NODES) {
+			errors.push("You can only select up to " + MAX_OBSERVED_NODES + " nodes for the observed graph");
+		}
+		if (count_observed > 0 && this.state.selectedServer !== "-1") {
+			errors.push("The observed graph is only available for the simulations run locally");
+		}
 		this.setState({errors: errors});
 
 		if (errors.length === 0) {
@@ -361,6 +383,7 @@ class NewSimForm extends React.Component {
 					settings: this.state.settings,
 					initialStates: initial_states,
 					outputVariables: this.state.outputVariables,
+					observedGraphNodes: this.state.observedGraphNodes,
 					mutations: mutations,
 					serverHost: server_host,
 					serverPort: server_port
@@ -424,6 +447,12 @@ class NewSimForm extends React.Component {
 									  	className={classnames({ active: this.state.activeTab === 'output_variables' })}
               							onClick={() => { this.toggleTab('output_variables'); }}
 									>Output</NavLink>
+								</NavItem>
+								<NavItem>
+									<NavLink
+									  	className={classnames({ active: this.state.activeTab === 'observed_graph' })}
+              							onClick={() => { this.toggleTab('observed_graph'); }}
+									>Observed graph</NavLink>
 								</NavItem>
 								<NavItem>
 									<NavLink
@@ -531,6 +560,19 @@ class NewSimForm extends React.Component {
 										toggleNode={this.updateOutputVariables}
 										allSwitch={this.state.allOutputVariables}
 										allSwitchToggle={this.toggleAllOutputVariables}
+									/>
+								</TabPane>
+								<TabPane tabId="observed_graph">
+									<p className="text-muted mt-2 mb-1">
+										The transitions between the states of these nodes (up to {MAX_OBSERVED_NODES}) will be drawn in the results
+									</p>
+									<TableSwitches
+										id={"og"}
+										type='switch'
+										height="17.5rem"
+										dict={this.state.observedGraphNodes}
+										toggle={this.updateObservedGraphNodes}
+										toggleNode={this.updateObservedGraphNodes}
 									/>
 								</TabPane>
 								<TabPane tabId="mutated_variables">

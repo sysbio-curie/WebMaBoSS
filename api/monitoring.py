@@ -25,6 +25,7 @@ from api.models.maboss import simulation_folder, sensitivityanalysis_folder
 
 # Fields of the simulations which hold their results, in the database
 RESULTS = ("fptable", "nodes_probtraj", "states_probtraj", "fixpoints")
+SIMULATION_RESULTS = RESULTS + ("observed_graph",)
 
 # Simulations still queued or running after that long were interrupted (by a restart of the server)
 STALLED_AFTER = timedelta(days=1)
@@ -49,9 +50,9 @@ def folder_size(path):
 	return size
 
 
-def results_size():
+def results_size(fields=RESULTS):
 	""" Expression of the size of the results of a simulation, in the database """
-	return sum((Coalesce(Length(field), 0) for field in RESULTS), Value(0))
+	return sum((Coalesce(Length(field), 0) for field in fields), Value(0))
 
 
 def registered_users():
@@ -153,7 +154,7 @@ def users():
 		data[user_id] += folder_size(join(settings.MEDIA_ROOT, path))
 
 	database = defaultdict(int)
-	for row in MaBoSSSimulation.objects.values("project__user").annotate(size=Sum(results_size())):
+	for row in MaBoSSSimulation.objects.values("project__user").annotate(size=Sum(results_size(SIMULATION_RESULTS))):
 		database[row["project__user"]] += row["size"] or 0
 	for row in MaBoSSSensitivitySimulation.objects.values("sensitivity_analysis__project__user").annotate(
 		size=Sum(results_size())
@@ -284,7 +285,7 @@ def cleanup_preview(kind, days=None, inactive_only=False, max_items=100):
 	)
 
 	database = (
-		(simulations.aggregate(size=Sum(results_size()))["size"] or 0)
+		(simulations.aggregate(size=Sum(results_size(SIMULATION_RESULTS)))["size"] or 0)
 		+ (MaBoSSSensitivitySimulation.objects.filter(sensitivity_analysis__in=analyses.values("id")).aggregate(
 			size=Sum(results_size()))["size"] or 0)
 	)

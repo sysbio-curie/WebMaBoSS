@@ -11,6 +11,7 @@ import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {faCaretDown} from "@fortawesome/free-solid-svg-icons";
 import MaBossSteadyStatesPCA from "./MaBossSteadyStatesPCA";
 import MaBossFixedPoints from "./MaBossFixedPoints";
+import MaBossObservedGraph from "./MaBossObservedGraph";
 import ErrorAlert from "../../../commons/ErrorAlert";
 import { isConnected } from "../../../commons/sessionVariables";
 
@@ -32,6 +33,8 @@ class MaBossResult extends React.Component {
 			lastStates: null,
 			nodesProbTraj: null,
 			statesProbTraj: null,
+			observedGraph: null,
+			observedGraphLoaded: false,
 
 			// pca: null,
 			// pcaArrows: null,
@@ -51,6 +54,7 @@ class MaBossResult extends React.Component {
 		this.getFixedPointsCall = null;
 		this.getNodesProbtrajCall = null;
 		this.getStateProbtrajCall = null;
+		this.getObservedGraphCall = null;
 		// this.getPCACall = null;
 		this.statusChecker = null;
 	}
@@ -73,6 +77,7 @@ class MaBossResult extends React.Component {
 				clearInterval(this.statusChecker);
 				this.setState({
 					lastStates: {}, fixedPoints: {}, nodesProbTraj: {}, statesProbTraj: {},
+					observedGraph: null, observedGraphLoaded: true,
 					errors: ["Simulation failed : " + data.error]
 				})
 				
@@ -95,6 +100,14 @@ class MaBossResult extends React.Component {
 				nodesProbTraj: data[2]['nodes_probtraj'], statesProbTraj: data[3]['states_probtraj']
 			});
 		});
+
+		// Apart, as it's only there when nodes were selected for it
+		this.setState({observedGraph: null, observedGraphLoaded: false});
+		this.getObservedGraphCall = APICalls.MaBoSSCalls.getObservedGraph(project_id, simulation_id);
+		this.getObservedGraphCall.promise.then(
+			data => this.setState({observedGraph: data['observed_graph'], observedGraphLoaded: true}),
+			error => { if (!error.isCanceled) { this.setState({observedGraph: null, observedGraphLoaded: true}); } }
+		);
 	}
 
 	// getLastStates(project_id, simulation_id) {
@@ -172,6 +185,7 @@ class MaBossResult extends React.Component {
 		if (this.getLastStatesCall !== null) {this.getLastStatesCall.cancel();}
 		if (this.getNodesProbtrajCall !== null) {this.getNodesProbtrajCall.cancel();}
 		if (this.getStateProbtrajCall !== null) {this.getStateProbtrajCall.cancel();}
+		if (this.getObservedGraphCall !== null) {this.getObservedGraphCall.cancel();}
 		// if (this.getPCACall !== null) {this.getPCACall.cancel();}
 
 	}
@@ -185,6 +199,8 @@ class MaBossResult extends React.Component {
 				lastStates: null,
 				nodesProbTraj: null,
 				statesProbTraj: null,
+				observedGraph: null,
+				observedGraphLoaded: false,
 				errors: []
 				// pca: null,
 				// pcaArrows: null,
@@ -229,6 +245,12 @@ class MaBossResult extends React.Component {
 									onClick={() => this.toggle('fp')}
 									className={classnames({ active: this.state.activeTab === 'fp' })}
 								>Fixed points</NavLink>
+							</NavItem>
+							<NavItem>
+								<NavLink
+									onClick={() => this.toggle('og')}
+									className={classnames({ active: this.state.activeTab === 'og' })}
+								>Observed graph</NavLink>
 							</NavItem>
 							
 							{/* <NavItem>
@@ -282,6 +304,15 @@ class MaBossResult extends React.Component {
 								simulationId={this.props.simulationId}
 								simulationName={this.props.simulationName}
 								fixedPoints={this.state.fixedPoints}
+							/>
+						</TabPane>
+						<TabPane tabId="og">
+							<MaBossObservedGraph
+								simulationId={this.props.simulationId}
+								simulationName={this.props.simulationName}
+								observedGraph={this.state.observedGraph}
+								loaded={this.state.observedGraphLoaded}
+								active={this.state.activeTab === 'og'}
 							/>
 						</TabPane>
 						{/* <TabPane tabId="pca">

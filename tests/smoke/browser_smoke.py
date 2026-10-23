@@ -77,17 +77,18 @@ class Prepared:
 
 		model = "/api/logical_model/%d/%d" % (self.project, self.model)
 		defaults = self.api("get", model + "/maboss/settings/").json()
+		outputs = defaults["output_variables"]
 		settings = dict(defaults["settings"], sample_count=1000, max_time=10)
 		self.api("post", model + "/maboss", data={
 			"name": "smoke simulation", "settings": json.dumps(settings),
 			"initialStates": json.dumps(defaults["initial_states"]),
 			"outputVariables": json.dumps(defaults["output_variables"]),
+			"observedGraphNodes": json.dumps({node: node in ["Migration", "Invasion", "Apoptosis"] for node in outputs}),
 			"mutations": json.dumps({}),
 		})
 		simulation = self.api("get", model + "/maboss").json()[0]["id"]
 		self.wait("/api/maboss/%d/%d/status" % (self.project, simulation), lambda s: s["done"])
 
-		outputs = defaults["output_variables"]
 		self.api("post", model + "/maboss_sensitivity", data={"settings": json.dumps({
 			"name": "smoke sensitivity",
 			"candidateVariables": {node: node in ["DNAdamage", "ECMicroenv"] for node in outputs},
@@ -263,10 +264,13 @@ ACTIONS = {
 	"/model/maboss/simulation/": [
 		("new simulation Initial states", open_new_simulation_tab("Initial states")),
 		("new simulation closed", close_modal),
+		("new simulation Observed graph", open_new_simulation_tab("Observed graph")),
+		("new simulation Observed graph closed", close_modal),
 		("load simulation", load_from_modal("Load old simulation", "smoke simulation")),
 	] + [
 		("tab " + tab, open_tab(tab)) for tab in [
-			"Nodes probability trajectories", "States probability trajectories", "Fixed points", "Final state distribution"
+			"Nodes probability trajectories", "States probability trajectories", "Fixed points", "Observed graph",
+			"Final state distribution"
 		]
 	],
 	"/model/maboss/sensitivity/": [

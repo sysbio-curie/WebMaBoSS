@@ -345,12 +345,15 @@ class Smoke:
 
 		settings = dict(defaults["settings"])
 		settings.update({"sample_count": 1000, "max_time": 10, "seed_pseudorandom": 42})
+		# The observed graph of the first three nodes
+		observed = {node: i < 3 for i, node in enumerate(defaults.get("observed_graph_nodes", {}))}
 
 		self.request("%s simulation create" % name, "post", model + "/maboss", data={
 			"name": "smoke simulation",
 			"settings": json.dumps(settings),
 			"initialStates": json.dumps(defaults["initial_states"]),
 			"outputVariables": json.dumps(defaults["output_variables"]),
+			"observedGraphNodes": json.dumps(observed),
 			"mutations": json.dumps({"Metastasis": "OFF"}),
 		})
 
@@ -365,7 +368,8 @@ class Smoke:
 		simulation = "/api/maboss/%d/%d" % (project_id, simulation_id)
 		self.wait("%s simulation status" % name, simulation + "/status", lambda s: s.get("done"))
 
-		for endpoint in ["fixed_points/", "last_states/", "states_trajs/", "nodes_trajs/", "pca", "sspca", "bnd_file", "cfg_file"]:
+		for endpoint in ["fixed_points/", "last_states/", "states_trajs/", "nodes_trajs/", "observed_graph/", "pca", "sspca",
+						 "bnd_file", "cfg_file"]:
 			self.request("%s simulation %s" % (name, endpoint), "get", "%s/%s" % (simulation, endpoint), expect=None)
 
 		self.request("%s simulation new model" % name, "get", simulation + "/new_model", expect=None)
@@ -500,7 +504,9 @@ def compare(new, ref1, ref2, path="", differences=None):
 
 # Steps returning results of stochastic simulations, which can't be compared value by value
 PROBABILITIES = ("simulation last_states/", "simulation states_trajs/", "simulation nodes_trajs/")
-STOCHASTIC = ("simulation fixed_points/", "simulation pca", "simulation sspca", "sensitivity steady states")
+STOCHASTIC = (
+	"simulation fixed_points/", "simulation observed_graph/", "simulation pca", "simulation sspca", "sensitivity steady states"
+)
 # Lists built from sets on the server, whose order changes when the server restarts
 UNORDERED = {"graph_raw": ["edges"]}
 

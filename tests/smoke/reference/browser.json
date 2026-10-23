@@ -605,7 +605,8 @@
    "Final state distribution",
    "Nodes probability trajectories",
    "States probability trajectories",
-   "Fixed points"
+   "Fixed points",
+   "Observed graph"
   ],
   "title": "WebMaBoSS",
   "url": "/model/maboss/simulation/"
@@ -648,7 +649,89 @@
    "General",
    "Initial states",
    "Output",
+   "Observed graph",
    "Mutations"
+  ],
+  "title": "WebMaBoSS",
+  "url": "/model/maboss/simulation/"
+ },
+ "user /model/maboss/simulation/ new simulation Observed graph": {
+  "buttons": [
+   "My Project",
+   "Metastasis",
+   "New simulation",
+   "Load old simulation",
+   "Close",
+   "Submit"
+  ],
+  "counts": {
+   "charts": 0,
+   "images": 0,
+   "inputs": 0,
+   "modals": 1,
+   "percentages": 0,
+   "tables": 1
+  },
+  "failed_requests": [],
+  "headings": [
+   "Model Metastasis"
+  ],
+  "js_errors": [],
+  "labels": [],
+  "nan": 0,
+  "navigation": [
+   "WebMaBoSS",
+   "Models",
+   "Tutorials",
+   "About",
+   "Profile",
+   "Logout",
+   "Overview",
+   "Editing",
+   "Simulation",
+   "Sensitivity",
+   "General",
+   "Initial states",
+   "Output",
+   "Observed graph",
+   "Mutations"
+  ],
+  "title": "WebMaBoSS",
+  "url": "/model/maboss/simulation/"
+ },
+ "user /model/maboss/simulation/ new simulation Observed graph closed": {
+  "buttons": [
+   "My Project",
+   "Metastasis",
+   "New simulation",
+   "Load old simulation"
+  ],
+  "counts": {
+   "charts": 0,
+   "images": 0,
+   "inputs": 0,
+   "modals": 0,
+   "percentages": 0,
+   "tables": 0
+  },
+  "failed_requests": [],
+  "headings": [
+   "Model Metastasis"
+  ],
+  "js_errors": [],
+  "labels": [],
+  "nan": 0,
+  "navigation": [
+   "WebMaBoSS",
+   "Models",
+   "Tutorials",
+   "About",
+   "Profile",
+   "Logout",
+   "Overview",
+   "Editing",
+   "Simulation",
+   "Sensitivity"
   ],
   "title": "WebMaBoSS",
   "url": "/model/maboss/simulation/"
@@ -726,7 +809,8 @@
    "Final state distribution",
    "Nodes probability trajectories",
    "States probability trajectories",
-   "Fixed points"
+   "Fixed points",
+   "Observed graph"
   ],
   "title": "WebMaBoSS",
   "url": "/model/maboss/simulation/"
@@ -767,7 +851,8 @@
    "Final state distribution",
    "Nodes probability trajectories",
    "States probability trajectories",
-   "Fixed points"
+   "Fixed points",
+   "Observed graph"
   ],
   "title": "WebMaBoSS",
   "url": "/model/maboss/simulation/"
@@ -808,7 +893,53 @@
    "Final state distribution",
    "Nodes probability trajectories",
    "States probability trajectories",
-   "Fixed points"
+   "Fixed points",
+   "Observed graph"
+  ],
+  "title": "WebMaBoSS",
+  "url": "/model/maboss/simulation/"
+ },
+ "user /model/maboss/simulation/ tab Observed graph": {
+  "buttons": [
+   "My Project",
+   "Metastasis",
+   "New simulation",
+   "Load old simulation",
+   "cose"
+  ],
+  "counts": {
+   "charts": 3,
+   "images": 3,
+   "inputs": 1,
+   "modals": 0,
+   "percentages": 2,
+   "tables": 0
+  },
+  "failed_requests": [],
+  "headings": [
+   "Model Metastasis"
+  ],
+  "js_errors": [],
+  "labels": [
+   "Hide transitions under"
+  ],
+  "nan": 0,
+  "navigation": [
+   "WebMaBoSS",
+   "Models",
+   "Tutorials",
+   "About",
+   "Profile",
+   "Logout",
+   "Overview",
+   "Editing",
+   "Simulation",
+   "Sensitivity",
+   "Final state distribution",
+   "Nodes probability trajectories",
+   "States probability trajectories",
+   "Fixed points",
+   "Observed graph"
   ],
   "title": "WebMaBoSS",
   "url": "/model/maboss/simulation/"
@@ -849,7 +980,8 @@
    "Final state distribution",
    "Nodes probability trajectories",
    "States probability trajectories",
-   "Fixed points"
+   "Fixed points",
+   "Observed graph"
   ],
   "title": "WebMaBoSS",
   "url": "/model/maboss/simulation/"

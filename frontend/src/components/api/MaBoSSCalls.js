@@ -334,6 +334,9 @@ class MaBoSSCalls {
 		formData.append('settings', JSON.stringify(data.settings));
 		formData.append('initialStates', JSON.stringify(data.initialStates));
 		formData.append('outputVariables', JSON.stringify(data.outputVariables));
+		if (data.observedGraphNodes !== undefined) {
+			formData.append('observedGraphNodes', JSON.stringify(data.observedGraphNodes));
+		}
 		formData.append('mutations', JSON.stringify(data.mutations));
 
 		if (data.serverHost !== null && data.serverPort !== null) {
@@ -434,6 +437,19 @@ class MaBoSSCalls {
 		return makeCancelable(
 			fetch(
 				"/api/maboss/" + project_id + "/" + simulation_id + "/nodes_trajs/",
+				{
+					method: "get",
+					headers: getDefaultHeaders()
+				}
+			).then(response => checkAuthorization(response))
+			.then(response => response.json())
+		);
+	}
+
+	static getObservedGraph(project_id, simulation_id) {
+		return makeCancelable(
+			fetch(
+				"/api/maboss/" + project_id + "/" + simulation_id + "/observed_graph/",
 				{
 					method: "get",
 					headers: getDefaultHeaders()

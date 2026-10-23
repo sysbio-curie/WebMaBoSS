@@ -69,6 +69,8 @@ class MaBoSSSimulation(TimeStampMixin):
 	nodes_probtraj = models.TextField(null=True)
 	states_probtraj = models.TextField(null=True)
 	fixpoints = models.TextField(null=True)
+	# The transitions between the states of the nodes selected for the observed graph
+	observed_graph = models.TextField(null=True)
 
 	QUEUED = 'Queued'
 	INTERRUPTED = 'Interrupted'

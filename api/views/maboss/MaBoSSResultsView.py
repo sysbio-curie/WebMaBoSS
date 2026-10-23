@@ -283,3 +283,22 @@ class MaBoSSResultsNodesProbTraj(HasMaBoSSSimulation):
 			},
 			status=status.HTTP_200_OK
 		)
+
+
+class MaBoSSResultsObservedGraph(HasMaBoSSSimulation):
+
+	def get(self, request, project_id, simulation_id):
+
+		HasMaBoSSSimulation.load(self, request, project_id, simulation_id)
+
+		observed_graph = None
+		if self.simulation.observed_graph is not None:
+			observed_graph = loads(self.simulation.observed_graph)
+
+		return Response(
+			{
+				'observed_graph': observed_graph,
+				'status': self.simulation.status
+			},
+			status=status.HTTP_200_OK
+		)

@@ -13,7 +13,7 @@ from api.views.BioLQMSimulation import LogicalModelSteadyStates
 from api.views.maboss.MaBossServerView import MaBoSSServerView, CheckServerView
 from api.views.maboss.MaBoSSSimulationView import MaBoSSSimulationView, MaBoSSSimulationRemove, MaBossSettings, MaBoSSSimulationBNDFile, MaBoSSSimulationCFGFile, MaBoSSSimulationNewModel, MaBoSSSimulationStatusView
 from api.views.maboss.MaBoSSSensitivityAnalysisView import MaBoSSSensitivityAnalysisView, MaBoSSSensitivityAnalysisRemove, MaBoSSSensitivitySteadyStatesView, MaBoSSSensitivityStatusView
-from api.views.maboss.MaBoSSResultsView import MaBoSSResultsLastState, MaBoSSResultsFixedPoints, MaBoSSResultsNodesProbTraj, MaBoSSResultsStatesProbTraj, MaBoSSResultsFixedPointsPCA, MaBoSSResultsSteadyStatesPCA
+from api.views.maboss.MaBoSSResultsView import MaBoSSResultsLastState, MaBoSSResultsFixedPoints, MaBoSSResultsNodesProbTraj, MaBoSSResultsStatesProbTraj, MaBoSSResultsFixedPointsPCA, MaBoSSResultsSteadyStatesPCA, MaBoSSResultsObservedGraph
 from api.views.maboss.MaBoSSModel import (
 	MaBoSSSpeciesFormulas, MaBoSSSpeciesFormula, MaBoSSCheckFormula,
 	MaBoSSParameters, MaBoSSParameter, MaBoSSCheckParameter,
@@ -95,6 +95,7 @@ urlpatterns = [
 	path('api/maboss/<int:project_id>/<int:simulation_id>/last_states/', MaBoSSResultsLastState.as_view()),
 	path('api/maboss/<int:project_id>/<int:simulation_id>/states_trajs/', MaBoSSResultsStatesProbTraj.as_view()),
 	path('api/maboss/<int:project_id>/<int:simulation_id>/nodes_trajs/', MaBoSSResultsNodesProbTraj.as_view()),
+	path('api/maboss/<int:project_id>/<int:simulation_id>/observed_graph/', MaBoSSResultsObservedGraph.as_view()),
 	path('api/maboss/<int:project_id>/<int:simulation_id>/bnd_file', MaBoSSSimulationBNDFile.as_view()),
 	path('api/maboss/<int:project_id>/<int:simulation_id>/cfg_file', MaBoSSSimulationCFGFile.as_view()),
 	path('api/maboss/<int:project_id>/<int:simulation_id>/new_model', MaBoSSSimulationNewModel.as_view()),
