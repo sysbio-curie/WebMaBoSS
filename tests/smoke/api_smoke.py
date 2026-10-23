@@ -559,7 +559,9 @@ def compare_step(step, new, ref1, ref2, differences):
 		if new["status"] != ref1["status"]:
 			differences.append((step, "status", ref1["status"], new["status"]))
 		else:
-			compare_probabilities(new["body"], ref1["body"], 0.08, step, differences)
+			# Within the tolerance of one of the two reference runs, which already differ
+			second = {d[0] for d in compare_probabilities(new["body"], ref2["body"], 0.08, step, [])}
+			differences += [d for d in compare_probabilities(new["body"], ref1["body"], 0.08, step, []) if d[0] in second]
 	elif step.endswith(STOCHASTIC):
 		# Only the structure of the response
 		expected = (ref1["status"], sorted(ref1["body"]) if isinstance(ref1["body"], dict) else type(ref1["body"]).__name__)
