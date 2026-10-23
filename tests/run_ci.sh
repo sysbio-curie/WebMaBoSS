@@ -35,7 +35,7 @@ FAILED=()
 cleanup() {
 	docker logs $NAME-app > "$OUT/app.log" 2>&1
 	docker cp $NAME-app:/var/webmaboss/server/error_log "$OUT/error_log" > /dev/null 2>&1
-	docker rm -f $NAME-db $NAME-app > /dev/null 2>&1
+	docker rm -f -v $NAME-db $NAME-app > /dev/null 2>&1
 	docker volume rm $NAME-data > /dev/null 2>&1
 	docker network rm $NAME > /dev/null 2>&1
 }
@@ -82,8 +82,9 @@ docker run --rm -v $NAME-data:/var/webmaboss/data --network $NAME $(limit 2g) "$
 " || { echo "Installation failed"; exit 1; }
 
 start_app() {
+	# Without the hourly maintenance (tested by the unit tests) : it would run during the smoke tests
 	docker run -d --name $NAME-app --network $NAME $(limit 3g) -v $NAME-data:/var/webmaboss/data \
-		"${DB[@]}" -e DB_NAME=webmaboss -e DB_USER=webmaboss $IMAGE > /dev/null
+		"${DB[@]}" -e DB_NAME=webmaboss -e DB_USER=webmaboss -e MAINTENANCE_EVERY=0 $IMAGE > /dev/null
 	wait_app
 }
 

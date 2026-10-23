@@ -509,6 +509,8 @@ STOCHASTIC = (
 )
 # Lists built from sets on the server, whose order changes when the server restarts
 UNORDERED = {"graph_raw": ["edges"]}
+# Files written from sets (the SVG of the regulatory graph, by GINsim) : their lines are compared in any order
+UNORDERED_LINES = (" graph",)
 
 
 def compare_probabilities(new, ref, tolerance, path="", differences=None):
@@ -540,6 +542,8 @@ def max_number(value):
 
 
 def sort_unordered(step, record):
+	if step.endswith(UNORDERED_LINES) and isinstance(record["body"], dict) and isinstance(record["body"].get("text"), str):
+		record = dict(record, body=dict(record["body"], text="\n".join(sorted(record["body"]["text"].splitlines()))))
 	for suffix, keys in UNORDERED.items():
 		if step.endswith(suffix) and isinstance(record["body"], dict):
 			record = dict(record, body=dict(record["body"]))
