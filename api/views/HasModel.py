@@ -135,88 +135,44 @@ class HasModel(HasProject):
 			raise MethodNowAllowed()
 
 		
+	# Models are stored as MaBoSS files, or for those uploaded by older versions as they were (GINsim or SBML) : each
+	# export is the stored file when it's in that format, otherwise a conversion with bioLQM (or MaBoSS)
+
+	def saveBioLQMModel(self, suffix, biolqm_format):
+		path = tempfile.mkstemp(dir=tempfile.mkdtemp(), suffix=suffix)[1]
+		biolqm.save(self.getBioLQMModel(), path, biolqm_format)
+		return path
+
 	def getSBMLModelFile(self):
-
-		if self.model.format == LogicalModel.ZGINML:
-			ginsim_model = ginsim.load(join(settings.MEDIA_ROOT, self.model.file.path))
-
-			path = tempfile.mkdtemp()
-			tmp_sbml = tempfile.mkstemp(dir=path, suffix='.sbml')[1]
-
-			biolqm.save(ginsim_model, tmp_sbml, "sbml")
-			return tmp_sbml
-
-		elif self.model.format == LogicalModel.MABOSS:
-			ginsim_model = self.getBioLQMModel()
-
-			path = tempfile.mkdtemp()
-			tmp_sbml = tempfile.mkstemp(dir=path, suffix='.sbml')[1]
-
-			biolqm.save(ginsim_model, tmp_sbml, "sbml")
-			return tmp_sbml
-			
-		elif self.model.format == LogicalModel.SBML:
+		if self.model.format == LogicalModel.SBML:
 			return join(settings.MEDIA_ROOT, self.model.file.path)
+		return self.saveBioLQMModel('.sbml', "sbml")
 
-		else:
-			raise MethodNotAllowed()
-			
 	def getBNetModelFile(self):
-
-		if self.model.format == LogicalModel.MABOSS:
-			ginsim_model = self.getBioLQMModel()
-
-			path = tempfile.mkdtemp()
-			tmp_sbml = tempfile.mkstemp(dir=path, suffix='.bnet')[1]
-
-			biolqm.save(ginsim_model, tmp_sbml, "bnet")
-			return tmp_sbml
-		
-		else:
-			raise MethodNotAllowed()
+		return self.saveBioLQMModel('.bnet', "bnet")
 
 	def getZGINMLModelFile(self):
-
 		if self.model.format == LogicalModel.ZGINML:
 			return join(settings.MEDIA_ROOT, self.model.file.path)
-
-		elif self.model.format == LogicalModel.MABOSS:
-			ginsim_model = self.getBioLQMModel()
-
-			path = tempfile.mkdtemp()
-			tmp_zginml = tempfile.mkstemp(dir=path, suffix='.zginml')[1]
-			biolqm.save(ginsim_model, tmp_zginml, "ginml")
-			return tmp_zginml
+		return self.saveBioLQMModel('.zginml', "ginml")
 
 	def getMaBoSSBNDFile(self):
-
 		if self.model.format == LogicalModel.MABOSS:
 			return join(settings.MEDIA_ROOT, self.model.bnd_file.path)
 
-		elif self.model.format == LogicalModel.ZGINML:
-			path = tempfile.mkdtemp()
-			tmp_bnd = tempfile.mkstemp(dir=path, suffix='.bnd')[1]
-			maboss_model = self.getMaBoSSModel()
-
-			with open(tmp_bnd, 'w') as file:
-				maboss_model.print_bnd(out=file)
-
-			return tmp_bnd
+		tmp_bnd = tempfile.mkstemp(dir=tempfile.mkdtemp(), suffix='.bnd')[1]
+		with open(tmp_bnd, 'w') as file:
+			self.getMaBoSSModel().print_bnd(out=file)
+		return tmp_bnd
 
 	def getMaBoSSCFGFile(self):
-
 		if self.model.format == LogicalModel.MABOSS:
 			return join(settings.MEDIA_ROOT, self.model.cfg_file.path)
 
-		elif self.model.format == LogicalModel.ZGINML:
-			path = tempfile.mkdtemp()
-			tmp_cfg = tempfile.mkstemp(dir=path, suffix='.cfg')[1]
-			maboss_model = self.getMaBoSSModel()
-
-			with open(tmp_cfg, 'w') as file:
-				maboss_model.print_cfg(out=file)
-
-			return tmp_cfg
+		tmp_cfg = tempfile.mkstemp(dir=tempfile.mkdtemp(), suffix='.cfg')[1]
+		with open(tmp_cfg, 'w') as file:
+			self.getMaBoSSModel().print_cfg(out=file)
+		return tmp_cfg
 			
 	def getLayout(self):
 		

@@ -63,7 +63,8 @@ class MaBoSSSensitivityAnalysisView(HasModel):
 		if nsimulations > 1000:
 			return Response({'analysis_id': -1, 'error': "too_much_simulations"}, status=status.HTTP_200_OK)
 
-		if self.model.format == LogicalModel.ZGINML:
+		# Models stored by older versions as GINsim or SBML files : converted
+		if self.model.format in (LogicalModel.ZGINML, LogicalModel.SBML):
 
 			bnd_path = join(settings.TMP_ROOT, splitext(basename(self.model.file.path))[0] + ".bnd")
 			bnd_file = open(bnd_path, 'w')
