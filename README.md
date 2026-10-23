@@ -112,10 +112,13 @@ The versions of all dependencies are fixed : conda packages in `docker/conda-lin
 
 ### Tutorials
 
-The directory tutorial contains two tutorials based on the two models in the default project :
+Three tutorials are based on the demo models, which are in the Demo and in the default project of the accounts :
 
 - [Tutorial on Cohen 2015 : Tumor Cell Invasion and Migration](https://github.com/sysbio-curie/WebMaBoSS/raw/master/tutorials/Tutorial_Cohen.pdf)
 - [Tutorial on Corral 2020 : Interplay between SMAD2 and STAT5A regulating IL-17A/F expression in Th cells](https://github.com/sysbio-curie/WebMaBoSS/raw/master/tutorials/Tutorial_Corral.pdf)
+- Tutorial on Sizek 2019 : following the cell cycle and the entry into apoptosis with observed graphs, in the Tutorials page of the interface (`/tutorials/sizek/`). It reproduces the section 3.9 of the [CoLoMoTo tutorial](https://doi.org/10.1098/rsfs.2025.0002).
+
+The Cohen and Corral tutorials are also available in the Tutorials page.
 
 ### License
 

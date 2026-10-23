@@ -43,13 +43,13 @@ module.exports = (env, argv) => ({
 			),
 		},
 	  }, {
-		// Model files to download in the tutorials, in frontend/static/tutorials
+		// The demo models, to download in the tutorials : in frontend/static/models
 		test: /\.(bnd|cfg)$/i,
-		include: path.resolve(__dirname, 'frontend/src/tutorials'),
+		include: path.resolve(__dirname, 'api/defaults/models'),
 		type: 'asset/resource',
 		generator: {
 			filename: (pathData) => path.posix.join(
-				'../tutorials', path.relative('frontend/src/tutorials', path.dirname(pathData.filename)), '[name][ext]'
+				'../models', path.relative('api/defaults/models', path.dirname(pathData.filename)), '[name][ext]'
 			),
 		},
 	  }

@@ -92,6 +92,7 @@ pre_delete.connect(remove_tagged_logical_model, sender=TaggedLogicalModel)
 DEMO_MODELS = [
 	("Cohen2015 - Tumour Cell Invasion and Migration", "metastasis"),
 	("Corral2021 - Interplay between SMAD2 and STAT5A regulating IL-17A/F expression in Th cells", "corral"),
+	("Sizek2019 - Growth signaling, cell cycle and apoptosis", "sizek"),
 ]
 
 def add_demo_models(project):

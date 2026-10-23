@@ -10,8 +10,8 @@ import casp3_observed_graph from "../images/tutorials/sizek/casp3_observed_graph
 import new_simulation_mutation from "../images/tutorials/sizek/new_simulation_mutation.png";
 import p110_trajectories from "../images/tutorials/sizek/p110_trajectories.png";
 import p110_observed_graph from "../images/tutorials/sizek/p110_observed_graph.png";
-import sizek_bnd from "../tutorials/sizek/Sizek2019.bnd";
-import sizek_cfg from "../tutorials/sizek/Sizek2019.cfg";
+import sizek_bnd from "../../../api/defaults/models/sizek/sizek.bnd";
+import sizek_cfg from "../../../api/defaults/models/sizek/sizek.cfg";
 
 const Figure = props => <div className="container" align="center"><img src={props.src} width={props.width || "80%"}/></div>;
 
@@ -33,9 +33,12 @@ class SizekTutorial extends React.Component {
 			<br/><br/><br/>
 
 			<h3>1. Loading the model</h3>
-			Download the two files of the model :&nbsp;
-			<a href={sizek_bnd} download>Sizek2019.bnd</a> and&nbsp;
-			<a href={sizek_cfg} download>Sizek2019.cfg</a>.
+			The model is one of the demo models : <b>Sizek2019 - Growth signaling, cell cycle and apoptosis</b>. It is in
+			the <b>Demo</b>, where simulations can be run without an account, and in the projects created since then.
+			<br/><br/>
+			Otherwise, download the two files of the model :&nbsp;
+			<a href={sizek_bnd} download>sizek.bnd</a> and&nbsp;
+			<a href={sizek_cfg} download>sizek.cfg</a>.
 			Then, in the Models page, click on <b>Load model</b>, choose the type <b>MaBoSS</b> and select the two files.
 			<br/><br/>
 			<Figure src={load_model} width="70%"/><br/>
