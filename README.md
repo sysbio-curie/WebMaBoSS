@@ -76,40 +76,6 @@ docker run -d --name webmaboss \
 ```
 And finally open your browser to this url : http://localhost:8000/
 
-### Behind a reverse proxy serving https
-The server of the container only speaks http. If it is published in https through a reverse proxy, add its public address to `settings/config.yml` in the data volume, and restart the container. Otherwise the forms of the administration pages are refused (403, CSRF verification failed) :
-```
-csrf_trusted_origins: ['https://maboss.curie.fr']
-```
-
-### Monitoring
-Administrators (accounts with the staff status, given in the administration pages at `/admin/`) have a Monitoring page in their profile : the number of active users in time, the space used by the database and the data, the list of the users with the space they use, and the cleanup of old or failed simulations, of the simulations of anonymous users, and of inactive accounts.
-
-### Maintenance
-`manage.py maintenance` deletes the simulations of anonymous users after a day, marks as interrupted the simulations a restart of the server stopped, cleans the expired sessions and the old imports of models, lists again the models of the repositories (BioModels, Cell Collective, GINsim) and computes the statistics of the users shown on the Monitoring page. The container runs it every hour, in the background (its output is in `docker logs webmaboss`). The environment variable `MAINTENANCE_EVERY` changes the period, in seconds, and `MAINTENANCE_EVERY=0` disables it, for instance to run it from the cron of the host instead :
-```
-docker exec webmaboss /opt/conda/bin/python3 manage.py maintenance --settings=settings.prod_settings
-```
-`--only demo stalled ...` runs some of the tasks.
-
-### Upgrading an installation from 1.0.x
-The data volumes are kept : the database is migrated when the container starts. Then :
-- behind a reverse proxy serving https, add `csrf_trusted_origins` to `settings/config.yml` (see above), as the administration pages would refuse their forms.
-- `allowed_hosts` in `settings/config.yml` can stay as older versions wrote it (`allowed_hosts: '*'`, a single string instead of a list) : it is read as a list.
-- Anonymous users can't modify the demo project anymore. Restore the demo models once, in case they were modified : `docker exec webmaboss /opt/conda/bin/python3 manage.py reset_demo --settings=settings.prod_settings`
-- The email addresses of the accounts are converted to lower case. Users log in with their username, so it changes nothing for them.
-
-### Tests
-
-The tests run against a docker image, in throwaway containers with an empty database : the unit tests, a smoke test of the API, and a smoke test of the web interface in a browser. The smoke tests are compared with reference snapshots, recorded with the last release, or when the behaviour is changed on purpose. They run on GitHub for every push, and can be run locally :
-```
-docker build -f docker/Dockerfile -t webmaboss:test .
-tests/run_ci.sh webmaboss:test
-```
-Snapshots, screenshots and logs are written in `tests-output`. To record new references, after checking that all the differences are expected : `tests/run_ci.sh webmaboss:test --record`.
-
-The versions of all dependencies are fixed : conda packages in `docker/conda-linux-64.lock`, python packages in `docker/constraints.txt` and javascript packages in `yarn.lock`, so that rebuilding the image always gives the same environment.
-
 ### Tutorials
 
 Three tutorials are based on the demo models, which are in the Demo and in the default project of the accounts :
@@ -119,6 +85,13 @@ Three tutorials are based on the demo models, which are in the Demo and in the d
 - Tutorial on Sizek 2019 : following the cell cycle and the entry into apoptosis with observed graphs, in the Tutorials page of the interface (`/tutorials/sizek/`). It reproduces the section 3.9 of the [CoLoMoTo tutorial](https://doi.org/10.1098/rsfs.2025.0002).
 
 The Cohen and Corral tutorials are also available in the Tutorials page.
+
+### Maintenance
+`manage.py maintenance` deletes the simulations of anonymous users after a day, marks as interrupted the simulations a restart of the server stopped, cleans the expired sessions and the old imports of models, lists again the models of the repositories (BioModels, Cell Collective, GINsim) and computes the statistics of the users shown on the Monitoring page. The container runs it every hour, in the background (its output is in `docker logs webmaboss`). The environment variable `MAINTENANCE_EVERY` changes the period, in seconds, and `MAINTENANCE_EVERY=0` disables it, for instance to run it from the cron of the host instead :
+```
+docker exec webmaboss /opt/conda/bin/python3 manage.py maintenance --settings=settings.prod_settings
+```
+`--only demo stalled ...` runs some of the tasks.
 
 ### License
 
