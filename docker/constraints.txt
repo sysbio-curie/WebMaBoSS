@@ -12,7 +12,7 @@ blinker==1.9.0
 cachetools==7.0.5
 chardet==5.2.0
 click==8.3.2
-cmaboss==1.0.0b33
+cmaboss==1.0.0b34
 colorbrewer==0.3
 colour==0.1.5
 cryptography==46.0.7
@@ -38,7 +38,7 @@ jsonschema-specifications==2025.9.1
 jsonschema==4.26.0
 libroadrunner==2.9.2
 lxml==6.0.4
-maboss==0.8.16
+maboss==0.8.17
 markdown-it-py==4.0.0
 markupsafe==3.0.3
 mdurl==0.1.2

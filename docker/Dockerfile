@@ -98,10 +98,6 @@ RUN curl -sL https://deb.nodesource.com/setup_24.x | bash - \
 ADD requirements.txt docker/constraints.txt /var/webmaboss/
 RUN /opt/conda/bin/python3 -m pip install -c /var/webmaboss/constraints.txt --upgrade wheel setuptools numpy
 RUN /opt/conda/bin/python3 -m pip install --no-cache-dir -c /var/webmaboss/constraints.txt --upgrade -r /var/webmaboss/requirements.txt
-# pyMaBoSS from the commit given in requirements.txt : as it has the same version number as the conda package,
-# pip would otherwise keep the conda one
-RUN /opt/conda/bin/python3 -m pip install --no-cache-dir --no-deps --force-reinstall \
-        "$(grep '^maboss @' /var/webmaboss/requirements.txt)"
 # Exposing port 8000 for server access
 EXPOSE 8000
 
